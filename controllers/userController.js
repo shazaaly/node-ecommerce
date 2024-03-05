@@ -3,7 +3,7 @@ const User = require('../models/userModel');
 const createUser = async (req, res) => {
     const { email } = req.body;
     try {
-        const existingUser = await User.find({ email });
+        const existingUser = await User.findOne({ email: email });
         if (existingUser) {
             return res.status(400).send({ message: 'User already exists' });
         }
