@@ -1,5 +1,6 @@
 const express = require('express');
 const conn = require('./dbconn');
+const {notFound, ErrHandler} = require('./middlewares/errorHandler');
 
 const app = express();
 require('dotenv').config();
@@ -17,6 +18,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/users', authRouter)
 
 
+
+
+app.use(ErrHandler);
+app.use(notFound);
 
 // Server
 app.listen(PORT, () => {
