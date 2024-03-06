@@ -1,3 +1,4 @@
+
 const expressAsyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
 jwt = require('jsonwebtoken')
@@ -25,8 +26,10 @@ const isAdmin = expressAsyncHandler(async(req, res, next)=>{
     const user = await User.findOne({email})
     if(user.role === 'admin'){
         next()
+
     }else{
         throw new Error('Unauthorized, Admin only access!')
+
     }
 })
 
@@ -39,8 +42,8 @@ const blockUser = expressAsyncHandler(async(req, res, next)=>{
             await user.save()
             res.json({message: 'User blocked'})
             next()
+
         }
-        next()
     }
     else{
         throw new Error("Id not found")
@@ -57,12 +60,13 @@ const unblockUser = expressAsyncHandler(async(req, res, next)=>{
         if(user){
             user.isBlocked = false
             await user.save()
-            res.json({message: 'User blocked'})
+            res.json({message: 'User unblocked'})
             next()
+
         }
-        next()
     }
     else{
+
         throw new Error("Id not found")
     
     }
