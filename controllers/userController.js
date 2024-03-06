@@ -15,4 +15,19 @@ const createUser = expressAsyncHandler(async (req, res) => {
         });
     });
 
-module.exports = createUser
+
+const loginUserController = expressAsyncHandler(async(req, res)=>{
+    const user = await User.findOne({"email": req.body.email})
+    if(!user){
+        return res.status(400).send("User not found")
+    }
+    const matched = await user.isPasswordMatched(req.body.password)
+    if(!matched){
+        return res.status(400).send("Invalid credentials")
+    }else{
+        res.json(user)
+    
+    }
+})
+
+module.exports = { createUser, loginUserController }; // Export the routes as an object
