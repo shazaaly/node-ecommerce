@@ -26,8 +26,48 @@ const isAdmin = expressAsyncHandler(async(req, res, next)=>{
     if(user.role === 'admin'){
         next()
     }else{
-        throw new Error('Unauthorized')
+        throw new Error('Unauthorized, Admin only access!')
     }
 })
 
-module.exports = {authMiddleware, isAdmin}
+const blockUser = expressAsyncHandler(async(req, res, next)=>{
+    const id = req.params.id
+    if(id){
+        const user = await User.findById(id)
+        if(user){
+            user.isBlocked = true
+            await user.save()
+            res.json({message: 'User blocked'})
+            next()
+        }
+        next()
+    }
+    else{
+        throw new Error("Id not found")
+    
+    }
+
+
+})
+
+const unblockUser = expressAsyncHandler(async(req, res, next)=>{
+    const id = req.params.id
+    if(id){
+        const user = await User.findById(id)
+        if(user){
+            user.isBlocked = false
+            await user.save()
+            res.json({message: 'User blocked'})
+            next()
+        }
+        next()
+    }
+    else{
+        throw new Error("Id not found")
+    
+    }
+
+
+})
+
+module.exports = {authMiddleware, isAdmin, blockUser, unblockUser}

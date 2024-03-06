@@ -30,7 +30,20 @@ const UserSchema = new schema({
         type: String,
         default: 'user'
     
-    }
+    },
+    isBlocked : {
+        type: Boolean,
+        default: false,
+    },
+    cart : {
+        type: Array,
+        default: []
+    
+    },
+    wishlist : {
+        type: Array,
+        default: []
+    },
 })
 
 UserSchema.pre('save', (async function(next){
