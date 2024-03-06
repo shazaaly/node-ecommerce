@@ -1,6 +1,7 @@
 const expressAsyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const generateToken = require('../jwtToken');
+const validateId = require('../utils/validateObjectId');
 /* register */
 const createUser = expressAsyncHandler(async (req, res) => {
     const { email } = req.body;
@@ -52,7 +53,9 @@ const allUsers = expressAsyncHandler(async (req, res) => {
 })
 
 const getUserById = expressAsyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id)
+    const id = req.params.id
+    validateId(id)
+    const user = await User.findById(id)
     if (!user) {
         throw new Error('User not found')
     }
@@ -60,14 +63,18 @@ const getUserById = expressAsyncHandler(async (req, res) => {
 })
 
 const deleteUser = expressAsyncHandler(async (req, res) => {
-    const user = await User.findByIdAndDelete(req.params.id)
+    const id = req.params.id
+    validateId(id)
+    const user = await User.findByIdAndDelete(id)
     if (!user) {
         throw new Error('User not found')
     }
     res.json(user)
 })
 const updateUser = expressAsyncHandler(async (req, res) => {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    const id  = req.params.id
+    validateId(id)
+    const user = await User.findByIdAndUpdate(id, req.body, { new: true })
     if (!user) {
         throw new Error('User not found')
     }
