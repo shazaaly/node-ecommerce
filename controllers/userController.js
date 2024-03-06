@@ -1,47 +1,45 @@
 const expressAsyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const generateToken = require('../jwtToken');
-
-
 /* register */
 const createUser = expressAsyncHandler(async (req, res) => {
     const { email } = req.body;
 
-        const existingUser = await User.findOne({ email: email });
-        if (existingUser) {
-            throw new Error('User already exists');
-        }
-        const user = await User.create(req.body);
-        res.status(201).json({
-            status: 'success',
-            user
-        });
+    const existingUser = await User.findOne({ email: email });
+    if (existingUser) {
+        throw new Error('User already exists');
+    }
+    const user = await User.create(req.body);
+    res.status(201).json({
+        status: 'success',
+        user
     });
+});
 
 /*login*/
-const loginUserController = expressAsyncHandler(async(req, res)=>{
-    const user = await User.findOne({"email": req.body.email})
-    if(!user){
+const loginUserController = expressAsyncHandler(async (req, res) => {
+    const user = await User.findOne({ "email": req.body.email })
+    if (!user) {
         return res.status(400).send("User not found")
     }
     const matched = await user.isPasswordMatched(req.body.password)
-    if(!matched){
+    if (!matched) {
         return res.status(400).send("Invalid credentials")
-    }else{
+    } else {
+        let token = generateToken(user.id);
         res.json({
             "status": 'success',
             "id": user.id,
-            "token": generateToken(user.id),
+            "token": token,
             "firstName": user.firstName,
             "lastName": user.lastName,
             "mobile": user.mobile,
             "email": user.email,
             "password": user.password,
         })
-    
+
     }
 })
-
 
 // get all users 
 const allUsers = expressAsyncHandler(async (req, res) => {
@@ -53,36 +51,32 @@ const allUsers = expressAsyncHandler(async (req, res) => {
     }
 })
 
-
-
-
-const getUserById = expressAsyncHandler(async(req, res)=>{
+const getUserById = expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id)
-    if (!user){
+    if (!user) {
         throw new Error('User not found')
     }
     res.json(user)
-
-
 })
 
-const deleteUser = expressAsyncHandler(async(req, res)=>{
+const deleteUser = expressAsyncHandler(async (req, res) => {
     const user = await User.findByIdAndDelete(req.params.id)
-    if (!user){
+    if (!user) {
+        throw new Error('User not found')
+    }
+    res.json(user)
+})
+const updateUser = expressAsyncHandler(async (req, res) => {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    if (!user) {
         throw new Error('User not found')
     }
     res.json(user)
 })
 
-const updateUser = expressAsyncHandler(async(req, res)=>{
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {new: true})
-    if (!user){
-        throw new Error('User not found')
-    }
-    res.json(user)
-
-})
-
-
-
-module.exports = { createUser, loginUserController, allUsers, getUserById, deleteUser, updateUser }; // Export the routes as an object
+module.exports = {
+    createUser,
+    loginUserController,
+    allUsers, getUserById,
+    deleteUser, updateUser
+}; // Export the routes as an object
