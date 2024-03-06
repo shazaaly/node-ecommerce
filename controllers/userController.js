@@ -1,6 +1,9 @@
 const expressAsyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
+const generateToken = require('../jwtToken');
 
+
+/* register */
 const createUser = expressAsyncHandler(async (req, res) => {
     const { email } = req.body;
 
@@ -15,7 +18,7 @@ const createUser = expressAsyncHandler(async (req, res) => {
         });
     });
 
-
+/*login*/
 const loginUserController = expressAsyncHandler(async(req, res)=>{
     const user = await User.findOne({"email": req.body.email})
     if(!user){
@@ -25,9 +28,61 @@ const loginUserController = expressAsyncHandler(async(req, res)=>{
     if(!matched){
         return res.status(400).send("Invalid credentials")
     }else{
-        res.json(user)
+        res.json({
+            "status": 'success',
+            "id": user.id,
+            "token": generateToken(user.id),
+            "firstName": user.firstName,
+            "lastName": user.lastName,
+            "mobile": user.mobile,
+            "email": user.email,
+            "password": user.password,
+        })
     
     }
 })
 
-module.exports = { createUser, loginUserController }; // Export the routes as an object
+
+// get all users 
+const allUsers = expressAsyncHandler(async (req, res) => {
+    const users = await User.find()
+    res.json(users)
+
+    if (!users) {
+        throw new Error(err.message);
+    }
+})
+
+
+
+
+const getUserById = expressAsyncHandler(async(req, res)=>{
+    const user = await User.findById(req.params.id)
+    if (!user){
+        throw new Error('User not found')
+    }
+    res.json(user)
+
+
+})
+
+const deleteUser = expressAsyncHandler(async(req, res)=>{
+    const user = await User.findByIdAndDelete(req.params.id)
+    if (!user){
+        throw new Error('User not found')
+    }
+    res.json(user)
+})
+
+const updateUser = expressAsyncHandler(async(req, res)=>{
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, {new: true})
+    if (!user){
+        throw new Error('User not found')
+    }
+    res.json(user)
+
+})
+
+
+
+module.exports = { createUser, loginUserController, allUsers, getUserById, deleteUser, updateUser }; // Export the routes as an object
