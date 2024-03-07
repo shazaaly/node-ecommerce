@@ -44,6 +44,7 @@ const UserSchema = new schema({
         type: Array,
         default: []
     },
+
 })
 
 UserSchema.pre('save', (async function(next){
