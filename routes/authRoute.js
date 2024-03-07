@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+
 const {
     createUser,
     loginUserController,
@@ -7,18 +8,25 @@ const {
     getUserById,
     deleteUser, 
     updateUser,
+    handleRefreshToken,
+    logout
 } = require('../controllers/userController');
 
 
 const {authMiddleware, isAdmin, blockUser,unblockUser} = require('../middlewares/authorizationMiddleware');
 
-router.post('/register', createUser)
-router.post('/login', loginUserController)
-router.get('/all', allUsers)
-router.put('/:id', authMiddleware, isAdmin,updateUser)
-router.get('/:id',authMiddleware, isAdmin, getUserById)
-router.put('/block-user/:id', authMiddleware, blockUser)
-router.put('/unblock-user/:id', authMiddleware, unblockUser)
-router.delete('/:id', deleteUser)
+// Public routes
+router.post('/register', createUser);
+router.post('/login', loginUserController); // No authMiddleware here
+router.post('/logout', logout);
+router.get('/refresh', handleRefreshToken); // This should probably be a protected route
+
+// Protected routes
+router.get('/all', authMiddleware, allUsers);
+router.put('/block-user/:id', authMiddleware, isAdmin, blockUser);
+router.put('/unblock-user/:id', authMiddleware, isAdmin, unblockUser);
+router.put('/:id', authMiddleware, isAdmin, updateUser);
+router.get('/:id', authMiddleware, isAdmin, getUserById);
+router.delete('/:id', authMiddleware, deleteUser);
 
 module.exports = router

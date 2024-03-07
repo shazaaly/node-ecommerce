@@ -1,6 +1,7 @@
 const expressAsyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const generateToken = require('../jwtToken');
+const refreshTokenGenerator = require('../refreshToken');
 const validateId = require('../utils/validateObjectId');
 /* register */
 const createUser = expressAsyncHandler(async (req, res) => {
@@ -27,11 +28,18 @@ const loginUserController = expressAsyncHandler(async (req, res) => {
     if (!matched) {
         return res.status(400).send("Invalid credentials")
     } else {
-        let token = generateToken(user.id);
+        const accessToken = generateToken(user.id);
+        const reftreshToken = refreshTokenGenerator(user.id);
+        res.cookie('refreshToken', reftreshToken, {
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 24 * 3,
+
+        })
         res.json({
             "status": 'success',
             "id": user.id,
-            "token": token,
+            "token": accessToken,
+            "refreshToken": reftreshToken,
             "firstName": user.firstName,
             "lastName": user.lastName,
             "mobile": user.mobile,
@@ -72,7 +80,7 @@ const deleteUser = expressAsyncHandler(async (req, res) => {
     res.json(user)
 })
 const updateUser = expressAsyncHandler(async (req, res) => {
-    const id  = req.params.id
+    const id = req.params.id
     validateId(id)
     const user = await User.findByIdAndUpdate(id, req.body, { new: true })
     if (!user) {
@@ -81,9 +89,51 @@ const updateUser = expressAsyncHandler(async (req, res) => {
     res.json(user)
 })
 
+const handleRefreshToken = expressAsyncHandler(async (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+        return res.status(401).send('Unauthorized')
+    }
+    try {
+            const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+            const user = await User.findById(decoded.id);
+            if (!user || decoded.id !== user.id) {
+                return res.status(401).send('Unauthorized refresh token');
+            }
+            const accessToken = generateToken(user.id);
+            res.json({ accessToken })
+
+        } catch (err) {
+            return res.status(401).send('Unauthorized refresh token');
+        }
+
+
+})
+
+const logout = expressAsyncHandler(async(req, res, next)=>{
+    const accessToken = req.cookies.accessToken
+    const refreshToken = req.cookies.refreshToken
+    console.log
+    if(!accessToken && !refreshToken){
+        return res.status(401).send('Unauthorized')
+    }
+    else
+    {
+        res.clearCookie('accessToken')
+        res.clearCookie('refreshToken')
+        res.status(200).send('Logged out successfully')
+    
+    }
+
+})
+
 module.exports = {
     createUser,
     loginUserController,
-    allUsers, getUserById,
-    deleteUser, updateUser
+    allUsers,
+    getUserById,
+    deleteUser,
+    updateUser,
+    handleRefreshToken,
+    logout
 }; // Export the routes as an object
