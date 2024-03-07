@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 const ProductSchema = new mongoose.Schema({
     //product module
-    name: {
+    title: {
         type: String,
         trim: true,
         required: true
@@ -24,12 +24,20 @@ const ProductSchema = new mongoose.Schema({
     },
     slug: {
         type: String,
-        // required: true
+        required: true
+    },
+    brand: {
+        type: String,
+        required: true
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
         // required: true
+    },
+    sold:{
+        type:Number,
+        default : 0
     },
     discount: {
         type: Number,
