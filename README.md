@@ -1,4 +1,4 @@
-# Node-ecommerce
+Node-ecommerce
 Node.js E-Commerce App with REST API | MongoDB | Advanced Authentication
 Sure, here's the README.md content as a continuous text block for easy copying:
 
