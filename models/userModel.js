@@ -2,6 +2,7 @@ const expressAsyncHandler = require('express-async-handler');
 const mongoose = require('mongoose');
 const schema = mongoose.Schema;
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 const UserSchema = new schema({
     firstName: {
@@ -26,6 +27,9 @@ const UserSchema = new schema({
         type: String,
         required: true,
     },
+    passwordChangetAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
     role:{
         type: String,
         default: 'user'
@@ -58,6 +62,16 @@ UserSchema.pre('save', (async function(next){
         if(!hashed) return next(new Error('Could not hash the password'))
         user.password = hashed
         next()
+
+        
+    UserSchema.methods.createPasswordResetToken= async()=>{
+        this.passwordResetToken = crypto.randomBytes(32).toString('hex')
+        this.passwordResetExpires = Date.now() + 10*60*1000
+        return this.passwordResetToken
+
+
+
+    }
         
     } catch (error) {
         next(error)

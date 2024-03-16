@@ -95,37 +95,57 @@ const handleRefreshToken = expressAsyncHandler(async (req, res) => {
         return res.status(401).send('Unauthorized')
     }
     try {
-            const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-            const user = await User.findById(decoded.id);
-            if (!user || decoded.id !== user.id) {
-                return res.status(401).send('Unauthorized refresh token');
-            }
-            const accessToken = generateToken(user.id);
-            res.json({ accessToken })
-
-        } catch (err) {
+        const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+        const user = await User.findById(decoded.id);
+        if (!user || decoded.id !== user.id) {
             return res.status(401).send('Unauthorized refresh token');
         }
+        const accessToken = generateToken(user.id);
+        res.json({ accessToken })
+
+    } catch (err) {
+        return res.status(401).send('Unauthorized refresh token');
+    }
 
 
 })
 
-const logout = expressAsyncHandler(async(req, res, next)=>{
+const logout = expressAsyncHandler(async (req, res, next) => {
     const accessToken = req.cookies.accessToken
     const refreshToken = req.cookies.refreshToken
     console.log
-    if(!accessToken && !refreshToken){
+    if (!accessToken && !refreshToken) {
         return res.status(401).send('Unauthorized')
     }
-    else
-    {
+    else {
         res.clearCookie('accessToken')
         res.clearCookie('refreshToken')
         res.status(200).send('Logged out successfully')
-    
+
     }
 
 })
+
+const updatePassword = expressAsyncHandler(async (req, res) => {
+    if (!req.user) {
+        return res.status(401).send('User not authenticated');
+    }
+    const { _id } = req.user;
+    const user = await User.findOne({ _id });
+    const password = req.body.password;
+    if (!user) {
+        throw new Error('User not found');
+    }
+    if (password) {
+        user.password = password;
+        await user.save();
+        res.status(200).json({
+            status: 'success',
+            message: 'Password updated successfully',
+            user
+        });
+    }
+});
 
 module.exports = {
     createUser,
@@ -135,5 +155,6 @@ module.exports = {
     deleteUser,
     updateUser,
     handleRefreshToken,
-    logout
+    logout,
+    updatePassword
 }; // Export the routes as an object

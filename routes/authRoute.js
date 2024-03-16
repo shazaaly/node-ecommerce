@@ -9,7 +9,8 @@ const {
     deleteUser, 
     updateUser,
     handleRefreshToken,
-    logout
+    logout,
+    updatePassword
 } = require('../controllers/userController');
 
 
@@ -17,6 +18,7 @@ const {authMiddleware, isAdmin, blockUser,unblockUser} = require('../middlewares
 
 // Public routes
 router.post('/register', createUser);
+router.put('/password', authMiddleware, updatePassword);
 router.post('/login', loginUserController); // No authMiddleware here
 router.post('/logout', logout);
 router.get('/refresh', handleRefreshToken); // This should probably be a protected route
