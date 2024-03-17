@@ -31,4 +31,7 @@ router.put('/:id', authMiddleware, isAdmin, updateUser);
 router.get('/:id', authMiddleware, isAdmin, getUserById);
 router.delete('/:id', authMiddleware, deleteUser);
 
+
+
+
 module.exports = router

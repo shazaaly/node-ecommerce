@@ -131,6 +131,7 @@ const updatePassword = expressAsyncHandler(async (req, res) => {
         return res.status(401).send('User not authenticated');
     }
     const { _id } = req.user;
+    validateId(_id);
     const user = await User.findOne({ _id });
     const password = req.body.password;
     if (!user) {

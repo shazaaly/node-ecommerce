@@ -11,6 +11,7 @@ conn();
 const PORT = process.env.PORT || 3000;
 const authRouter = require('./routes/authRoute');
 const productRouter = require('./routes/productRouter');
+const emailRouter = require('./routes/emailRouter');
 
 const bodyParser = require('body-parser');
 
@@ -22,7 +23,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
 app.use('/api/users', authRouter)
+app.use('/api/emails', emailRouter)
 app.use('/api/product', productRouter)
+
 
 
 
