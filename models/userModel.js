@@ -27,7 +27,7 @@ const UserSchema = new schema({
         type: String,
         required: true,
     },
-    passwordChangetAt: Date,
+    passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
     role:{
@@ -50,6 +50,11 @@ const UserSchema = new schema({
     },
 
 })
+UserSchema.methods.createPasswordResetToken = function() {
+    this.passwordResetToken = crypto.randomBytes(32).toString('hex');
+    this.passwordResetExpires = Date.now() + 100 * 60 * 1000;
+    return this.passwordResetToken;
+};
 
 UserSchema.pre('save', (async function(next){
     const user = this
@@ -70,11 +75,7 @@ UserSchema.pre('save', (async function(next){
 
 }))
 
-UserSchema.methods.createPasswordResetToken = ()=>{
-    this.passwordResetToken = crypto.randomBytes(32).toString('hex')
-    this.passwordResetExpires = Date.now() + 100*60*1000
-    return this.passwordResetToken
-}
+
 /* isPasswordMatched to the instances of the Mongoose model. 
 This method will be available on all documents created from the model.*/
 UserSchema.methods.isPasswordMatched = async function(password){

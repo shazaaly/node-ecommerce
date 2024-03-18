@@ -189,6 +189,7 @@ const resetPassword = expressAsyncHandler(async (req, res) => {
         passwordResetToken: hashedToken,
         passwordResetExpires: { $gt: Date.now() }
     })
+    console.log('user:', user);
     if (!user) {
         return res.status(400).send('Invalid token')
     }
