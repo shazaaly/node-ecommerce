@@ -197,7 +197,7 @@ const resetPassword = expressAsyncHandler(async (req, res) => {
     user.passwordResetToken = undefined
     user.passwordResetExpires = undefined
     await user.save()
-    res.json({ user })
+    res.json( user )
 
 })
 
