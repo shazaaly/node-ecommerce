@@ -181,12 +181,11 @@ const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
 
 const resetPassword = expressAsyncHandler(async (req, res) => {
     const token = req.params.token
-
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
+    // const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
     console.log(token)
-    console.log(hashedToken)
+    // console.log(hashedToken)
     const user = await User.findOne({
-        passwordResetToken: hashedToken,
+        passwordResetToken: token,
         passwordResetExpires: { $gt: Date.now() }
     })
     console.log('user:', user);

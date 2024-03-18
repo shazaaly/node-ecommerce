@@ -51,7 +51,8 @@ const UserSchema = new schema({
 
 })
 UserSchema.methods.createPasswordResetToken = function() {
-    this.passwordResetToken = crypto.randomBytes(32).toString('hex');
+    let token = crypto.randomBytes(32).toString('hex');
+    this.passwordResetToken = crypto.createHash('sha256').update(token).digest('hex');
     this.passwordResetExpires = Date.now() + 100 * 60 * 1000;
     return this.passwordResetToken;
 };

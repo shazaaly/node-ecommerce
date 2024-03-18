@@ -2,6 +2,7 @@
 logs
 draft
 .env
+bugs
 dockermongo.md
 *.log
 npm-debug.log*
