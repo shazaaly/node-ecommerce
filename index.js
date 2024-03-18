@@ -14,7 +14,7 @@ const productRouter = require('./routes/productRouter');
 const emailRouter = require('./routes/emailRouter');
 
 const bodyParser = require('body-parser');
-
+app.use(express.json());
 
 
 // Routes

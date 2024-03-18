@@ -10,7 +10,9 @@ const {
     updateUser,
     handleRefreshToken,
     logout,
-    updatePassword
+    updatePassword,
+    forgetPasswordToken,
+    resetPassword
 } = require('../controllers/userController');
 
 
@@ -18,6 +20,9 @@ const {authMiddleware, isAdmin, blockUser,unblockUser} = require('../middlewares
 
 // Public routes
 router.post('/register', createUser);
+router.post('/forget-password', forgetPasswordToken);
+router.get('/reset-password/:token', resetPassword);
+
 router.put('/password', authMiddleware, updatePassword);
 router.post('/login', loginUserController); // No authMiddleware here
 router.post('/logout', logout);

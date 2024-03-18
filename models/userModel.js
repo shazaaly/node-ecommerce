@@ -61,24 +61,20 @@ UserSchema.pre('save', (async function(next){
         const hashed = await bcrypt.hash(user.password, 10)
         if(!hashed) return next(new Error('Could not hash the password'))
         user.password = hashed
-        next()
-
-        
-    UserSchema.methods.createPasswordResetToken= async()=>{
-        this.passwordResetToken = crypto.randomBytes(32).toString('hex')
-        this.passwordResetExpires = Date.now() + 10*60*1000
-        return this.passwordResetToken
-
-
-
-    }
-        
+        user.createPasswordResetToken();
+        next()        
     } catch (error) {
         next(error)
         
     }
 
 }))
+
+UserSchema.methods.createPasswordResetToken = ()=>{
+    this.passwordResetToken = crypto.randomBytes(32).toString('hex')
+    this.passwordResetExpires = Date.now() + 100*60*1000
+    return this.passwordResetToken
+}
 /* isPasswordMatched to the instances of the Mongoose model. 
 This method will be available on all documents created from the model.*/
 UserSchema.methods.isPasswordMatched = async function(password){

@@ -1,10 +1,7 @@
 const nodemailer = require('nodemailer');
 const expressAsyncHandler = require('express-async-handler');
 
-const sendMail = expressAsyncHandler(async (req, res) => {
-    const { to, subject, text } = req.body;
-
-
+const sendMail = async ({ to, subject, text }) => {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -17,25 +14,22 @@ const sendMail = expressAsyncHandler(async (req, res) => {
         }
     });
 
-    let mailOptions = {
+    const mailOptions = {
         from: process.env.EMAIL,
-        to : to,
-        subject : subject,
-        text : text
+        to,
+        subject,
+        text,
     };
-    
-    transporter.sendMail(mailOptions, function(error, info) {
-        if (error) {
-            console.log(error);
-            res.status(500).send('Error sending email');
-        } else {
-            console.log('Email sent: ' + info.response);
-            res.status(200).send('Email sent: ' + info.response);
-        }
-    });
-    
 
-})
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Email sent: ' + info.response);
+        return { success: true, message: 'Email sent: ' + info.response };
+    } catch (error) {
+        console.error(error);
+        return { success: false, message: 'Error sending email' };
+    }
+};
 
 
 

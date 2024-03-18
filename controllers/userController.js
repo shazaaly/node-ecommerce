@@ -3,6 +3,8 @@ const User = require('../models/userModel');
 const generateToken = require('../jwtToken');
 const refreshTokenGenerator = require('../refreshToken');
 const validateId = require('../utils/validateObjectId');
+const sendMail = require('../controllers/emailController');
+const crypto = require('crypto')
 /* register */
 const createUser = expressAsyncHandler(async (req, res) => {
     const { email } = req.body;
@@ -148,6 +150,57 @@ const updatePassword = expressAsyncHandler(async (req, res) => {
     }
 });
 
+const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
+    const email = req.body.email;
+    let user;
+    try {
+        user = await User.findOne({ email: email });
+
+        if (!user) {
+            return res.status(400).json({ message: 'No user found with this email address' });
+        }
+        const token = user.createPasswordResetToken();
+        await user.save();
+
+        await sendMail({
+            from: process.env.EMAIL,
+            to: user.email,
+            subject: "Reset Password",
+            text: `Use the following link to reset your password ${process.env.TEST_URL}/reset-password/${token}`
+        });
+
+        // If email sent successfully, return a success response
+        return res.status(200).json({ message: 'Password reset email sent successfully.' });
+    } catch (error) {
+        // Log or handle the error accordingly before sending a response
+        console.error("Error during forgetPasswordToken operation:", error);
+        // Adjusted to send back a 500 status code, which is more appropriate for server errors
+        return res.status(500).json({ message: error.message });
+    }
+});
+
+const resetPassword = expressAsyncHandler(async (req, res) => {
+    const token = req.params.token
+
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
+    console.log(token)
+    console.log(hashedToken)
+    const user = await User.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetExpires: { $gt: Date.now() }
+    })
+    if (!user) {
+        return res.status(400).send('Invalid token')
+    }
+    const password = req.body.password
+    user.password = password
+    user.passwordResetToken = undefined
+    user.passwordResetExpires = undefined
+    await user.save()
+    res.json({ user })
+
+})
+
 module.exports = {
     createUser,
     loginUserController,
@@ -157,5 +210,7 @@ module.exports = {
     updateUser,
     handleRefreshToken,
     logout,
-    updatePassword
+    updatePassword,
+    forgetPasswordToken,
+    resetPassword
 }; // Export the routes as an object
