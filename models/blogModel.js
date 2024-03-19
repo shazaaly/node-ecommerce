@@ -21,10 +21,10 @@ const blogSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    likes:{
+    likes:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
-    },
+    }],
     image:{
         type: String,
         default: "https://ibb.co/2sY9nwj"
