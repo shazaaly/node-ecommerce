@@ -13,6 +13,7 @@ const authRouter = require('./routes/authRoute');
 const productRouter = require('./routes/productRouter');
 const emailRouter = require('./routes/emailRouter');
 const blogRouter = require('./routes/blogRouter');
+const categoryRouter = require('./routes/categoryRouter');
 
 const bodyParser = require('body-parser');
 app.use(express.json());
@@ -27,6 +28,7 @@ app.use('/api/users', authRouter)
 app.use('/api/emails', emailRouter)
 app.use('/api/product', productRouter)
 app.use('/api/blog', blogRouter)
+app.use('/api/category', categoryRouter)
 
 
 

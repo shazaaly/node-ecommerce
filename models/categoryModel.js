@@ -1,15 +1,19 @@
 const mongoose = require('mongoose');
 
 const categorySchema = new mongoose.Schema({
-    name: {
+    title: {
         type: String,
         required: true,
         unique: true,
         index: true
     },
-    timestamps: true
-
-})
+    products: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+    }],
+},     {timestamp : true}
+);
+   
 
 
 module.exports = mongoose.model('Category', categorySchema);
