@@ -5,7 +5,6 @@ const createBlog = expressAsyncHandler(async (req, res) => {
     try {
         const blog = await Blog.create(req.body);
         res.status(201).json({
-            status: 'success',
             data: { blog }
 
         });
@@ -21,7 +20,6 @@ const updateBlog = expressAsyncHandler(async (req, res) => {
         const { id } = req.params;
         const updatedBlog = await Blog.findOneAndUpdate({ _id: id }, req.body, { new: true });
         res.json({
-            status: 'success',
             data: { updatedBlog }
         });
 
@@ -82,7 +80,6 @@ const deleteBlog = expressAsyncHandler(async (req, res) => {
         }
         await blog.deleteOne({ _id: id });
         res.json({
-            status: 'success',
             message: 'Blog deleted successfully'
         });
     } catch (error) {
@@ -111,7 +108,6 @@ const likeBlog = expressAsyncHandler(async (req, res) => {
         }
 
         return res.status(200).json({
-            status: 'success',
             data: { blog }
         });
 
@@ -148,7 +144,6 @@ const removeLike = expressAsyncHandler(async (req, res) => {
             }
     
             return res.status(200).json({
-                status: 'success',
                 data: { blog }
             });
 ;

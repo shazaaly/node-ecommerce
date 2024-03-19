@@ -24,7 +24,6 @@ const createProduct = expressAsyncHandler(async (req, res) => {
         return res.status(500).json({ message: "Product could not be saved" })
     }
     res.status(201).json({
-        status: 'success',
         "product": savedProduct
     })
 

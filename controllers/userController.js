@@ -15,7 +15,6 @@ const createUser = expressAsyncHandler(async (req, res) => {
     }
     const user = await User.create(req.body);
     res.status(201).json({
-        status: 'success',
         user
     });
 });
@@ -143,7 +142,6 @@ const updatePassword = expressAsyncHandler(async (req, res) => {
         user.password = password;
         await user.save();
         res.status(200).json({
-            status: 'success',
             message: 'Password updated successfully',
             user
         });
