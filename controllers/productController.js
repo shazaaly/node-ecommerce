@@ -2,6 +2,7 @@ const Product = require('../models/productModel');
 const expressAsyncHandler = require('express-async-handler');
 const validateId = require('../utils/validateObjectId');
 const slugify = require('slugify');
+const User = require('../models/userModel');
 
 
 const createProduct = expressAsyncHandler(async (req, res) => {
@@ -31,38 +32,38 @@ const createProduct = expressAsyncHandler(async (req, res) => {
 
 // Helper function for advanced filtering
 const buildFilterQuery = (query) => {
-  const excludeFields = ['page', 'sort', 'limit', 'fields'];
-  excludeFields.forEach(field => delete query[field]);
-  let queryString = JSON.stringify(query).replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
-  return JSON.parse(queryString);
+    const excludeFields = ['page', 'sort', 'limit', 'fields'];
+    excludeFields.forEach(field => delete query[field]);
+    let queryString = JSON.stringify(query).replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+    return JSON.parse(queryString);
 };
 
 // Helper function to build the MongoDB regex query for case-insensitive search
 const buildRegexSearch = (query) => {
-  if (query.title) {
-    return { title: { $regex: query.title, $options: 'i' } };
-  }
-  return {};
+    if (query.title) {
+        return { title: { $regex: query.title, $options: 'i' } };
+    }
+    return {};
 };
 
 // Helper function for sorting
 const buildSortQuery = (sort) => {
-  return sort ? sort.split(',').join(' ') : '-createdAt';
+    return sort ? sort.split(',').join(' ') : '-createdAt';
 };
 
 // Helper function for field limiting (projection)
 const buildFieldLimitQuery = (fields) => {
-  return fields ? fields.split(',').join(' ') : '-__v';
+    return fields ? fields.split(',').join(' ') : '-__v';
 };
 
 // Helper function for pagination
 const buildPaginationOptions = (page, limit) => {
-  const pageNum = parseInt(page, 10) || 1;
-  const limitNum = parseInt(limit, 10) || 10;
-  return {
-    skip: (pageNum - 1) * limitNum,
-    limit: limitNum
-  };
+    const pageNum = parseInt(page, 10) || 1;
+    const limitNum = parseInt(limit, 10) || 10;
+    return {
+        skip: (pageNum - 1) * limitNum,
+        limit: limitNum
+    };
 };
 
 const getAllProducts = expressAsyncHandler(async (req, res, next) => {
@@ -73,26 +74,26 @@ const getAllProducts = expressAsyncHandler(async (req, res, next) => {
         const sortQuery = buildSortQuery(req.query.sort);
         const fieldsQuery = buildFieldLimitQuery(req.query.fields);
         const { skip, limit } = buildPaginationOptions(req.query.page, req.query.limit);
-        
+
         // Combined query object
         const queryObject = { ...filterQuery, ...regexSearch };
-        
+
         // Query execution
         let query = Product.find(queryObject)
-                           .sort(sortQuery)
-                           .select(fieldsQuery)
-                           .skip(skip)
-                           .limit(limit);
+            .sort(sortQuery)
+            .select(fieldsQuery)
+            .skip(skip)
+            .limit(limit);
 
         // Getting total records for pagination calculation
         const totalRecords = await Product.countDocuments(queryObject);
-        
+
         // Query result
         const products = await query;
 
         // Checking if the page number exceeds the total pages
         if (req.query.page && skip >= totalRecords) {
-          return res.status(404).json({ status: false, message: 'Page does not exist!' });
+            return res.status(404).json({ status: false, message: 'Page does not exist!' });
         }
 
         // Response
@@ -173,6 +174,53 @@ const deleteProduct = expressAsyncHandler(async (req, res) => {
 
 })
 
+const addToWishList = expressAsyncHandler(async (req, res) => {
+    const prod_id = req.params.id
+    if (!prod_id) {
+        return res.status(400).json({ message: "Product Not Found!" })
+    }
+    const user_id = req.user._id;
+    if (!user_id) {
+        return res.status(400).json({ message: "User id is required" })
+    }
+    validateId(prod_id)
+    validateId(user_id)
+    const IsExistingInWishList = await User.findOne({ _id: user_id, wishlist: prod_id })
+    if (IsExistingInWishList) {
+        return res.status(400).json({ message: "Product already in wishlist" })
+    }
+    const updatedUser = await User.findByIdAndUpdate(
+        user_id,
+        { $addToSet: { wishlist: prod_id } },
+        { new: true }
+    )
+    return res.status(200).json({ message: "Product added to wishlist", updatedUser })
+
+
+})
+
+const removeFromWishList = expressAsyncHandler(async (req, res) => {
+    const prod_id = req.params.id
+    const user_id = req.user._id;
+    if (!user_id) {
+        return res.status(400).json({ message: "User Not Found" })
+    }
+    validateId(prod_id)
+    validateId(user_id)
+    const IsExistingInWishList = await User.findOne({ _id: user_id, wishlist: {$in : [prod_id]} })
+    if (!IsExistingInWishList) {
+        return res.status(400).json({ message: "Product Not in wishlist" })
+    }
+    const updatedUser = await User.findByIdAndUpdate(
+        user_id,
+        { $pull: { wishlist: prod_id } },
+        { new: true }
+    )
+    return res.status(200).json({ message: "Product removed from wishlist", updatedUser })
+
+
+})
+
 
 
 module.exports = {
@@ -180,5 +228,7 @@ module.exports = {
     getAllProducts,
     getProductById,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    addToWishList,
+    removeFromWishList
 };
