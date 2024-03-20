@@ -44,10 +44,10 @@ const UserSchema = new schema({
         default: []
     
     },
-    wishlist : {
-        type: Array,
-        default: []
-    },
+    wishlist : [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref : 'Product'
+        }],
 
 })
 UserSchema.methods.createPasswordResetToken = function() {

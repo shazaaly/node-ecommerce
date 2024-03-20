@@ -41,7 +41,7 @@ const getCategoryById = expressAsyncHandler(async (req, res) => {
         if (!category) {
             return res.status(404).json({ message: "category not found" })
         }
-        res.json(product)
+        res.json(category)
 
     } catch (error) {
         throw new Error(error.message)
