@@ -8,11 +8,11 @@ const {
     updateCategory,
     deletecategory,
     getCategoryProducts
-} = require('../controllers/blogController');
+} = require('../controllers/categoryController');
 
 const {authMiddleware, isAdmin} = require('../middlewares/authorizationMiddleware');
 
-router.post('/', authMiddleware, createCategory);
+router.post('/create', authMiddleware, createCategory);
 router.get('/all', authMiddleware, getAllCategories);
 router.get('/products/:id', authMiddleware, getCategoryProducts);
 router.get('/:id', authMiddleware, getCategoryById);

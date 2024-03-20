@@ -5,26 +5,19 @@ const validateId = require('../utils/validateObjectId');
 
 const createCategory = expressAsyncHandler(async (req, res) => {
     try {
-        if (req.body.title) {
+        const cat = await Category.findOne({ title: req.body.title });
+        if (cat) {
+            return res.status(400).json({ message: "Category already exists" })
         }
+        const newCat = new Category(req.body);
+        const savedCat = await newCat.save();
+        if (!savedCat) {
+            return res.status(500).json({ message: "Category could not be saved" })
+        }
+        return res.status(200).json({ message: "Category saved successfully", category: savedCat });
     } catch (error) {
-
-        throw new Error(error.message)
+        return res.status(500).json({ message: error.message }) 
     }
-
-    const existingcategory = await Category.findOne({ title: req.body.title });
-    if (existingcategory) {
-        return res.status(400).json({ message: "Category already exists" })
-    }
-    const category = new Category(req.body)
-    const savedcategory = await category.save()
-    if (!savedcategory) {
-        return res.status(500).json({ message: "Category could not be saved" })
-    }
-    res.status(201).json({
-        "category": savedcategory
-    })
-
 })
 
 const getAllCategories = expressAsyncHandler(async (req, res) => {
@@ -104,7 +97,6 @@ const deletecategory = expressAsyncHandler(async (req, res) => {
 
 const getCategoryProducts = expressAsyncHandler(async (req, res) => {
     try {
-        // get category by id from params
         const {cat_id} = req.params;
 
         const cat = await Category.findById({_id:cat_id}).populate('products');
@@ -112,7 +104,7 @@ const getCategoryProducts = expressAsyncHandler(async (req, res) => {
         return res.status(200).json(cat.products);
     
     } catch (error) {
-        return
+        return res.status(500).json({message: error.message});
     }
 
 })

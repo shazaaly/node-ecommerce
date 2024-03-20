@@ -13,7 +13,7 @@ const authRouter = require('./routes/authRoute');
 const productRouter = require('./routes/productRouter');
 const emailRouter = require('./routes/emailRouter');
 const blogRouter = require('./routes/blogRouter');
-const categoryRouter = require('./routes/categoryRouter');
+const categoryRouter = require('./routes/categoryRouters');
 
 const bodyParser = require('body-parser');
 app.use(express.json());
