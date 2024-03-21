@@ -1,4 +1,9 @@
 const express = require('express');
+//Swagger
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+
+
 const conn = require('./dbconn');
 const {notFound, ErrHandler} = require('./middlewares/errorHandler');
 const cookieParser = require('cookie-parser');
@@ -6,6 +11,25 @@ const morgan = require('morgan');
 
 
 const app = express();
+
+// Swagger definition
+const options = {
+    definition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'Ecommerce API',
+        version: '1.0.0',
+      },
+    },
+    apis: ['./routes/*.js'], // path to API files
+  };
+  
+  const swaggerSpec = swaggerJsdoc(options);
+  
+  // Serve Swagger docs
+  app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+
 require('dotenv').config();
 conn();
 const PORT = process.env.PORT || 3000;
