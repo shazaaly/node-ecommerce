@@ -241,6 +241,26 @@ const addRating = expressAsyncHandler(async (req, res) => {
     res.json(updatedProduct);
 });
 
+const getAverageRating = expressAsyncHandler(async (req, res) => {
+    const {id} = req.params
+    const product = await Product.findById(id)
+    if(!product){
+        return res.status(404).json({message: "Product not found"})
+    }
+    const len = product.ratings.length
+    const sumRatings = product.ratings.reduce((acc, item)=>{
+        return acc + item.stars
+
+    }, 0)
+    if(len === 0){
+        return res.status(200).json({averageRating: 0})
+    }
+    const averageRating = (sumRatings/len)
+    return res.status(200).json({averageRating})
+
+
+})
+
 
 
 module.exports = {
@@ -251,5 +271,6 @@ module.exports = {
     deleteProduct,
     addToWishList,
     removeFromWishList,
-    addRating
+    addRating,
+    getAverageRating
 };

@@ -45,6 +45,10 @@ const ProductSchema = new mongoose.Schema({
     images: {
         type: Array,
     },
+    totalRatings : {
+        type: Number,
+        default : 0
+    },
     ratings : [
         {
             stars : Number,
