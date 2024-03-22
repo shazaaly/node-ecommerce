@@ -2,8 +2,6 @@ const express = require('express');
 //Swagger
 const setupSwagger = require('./swagger');
 
-
-
 const conn = require('./dbconn');
 const {notFound, ErrHandler} = require('./middlewares/errorHandler');
 const cookieParser = require('cookie-parser');
@@ -25,6 +23,7 @@ const emailRouter = require('./routes/emailRouter');
 const blogRouter = require('./routes/blogRouter');
 const categoryRouter = require('./routes/categoryRouters');
 const userRouter = require('./routes/userRouter');
+const couponRouter = require('./routes/couponRouter');
 
 const bodyParser = require('body-parser');
 app.use(express.json());
@@ -41,6 +40,7 @@ app.use('/api/product', productRouter)
 app.use('/api/blog', blogRouter)
 app.use('/api/category', categoryRouter)
 app.use('/api/users', userRouter)
+app.use('/api/coupon', couponRouter)
 
 
 
