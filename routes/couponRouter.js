@@ -3,10 +3,11 @@ const {
     createCoupon, 
     updateCoupon
 } = require('../controllers/couponController');
-const authMiddleware = require('../middlewares/authorizationMiddleware');
+
+const {authMiddleware, isAdmin} = require('../middlewares/authorizationMiddleware');
 const router = express.Router();
 
-router.post('/create', authMiddleware, createCoupon);
-router.put('/update', authMiddleware, updateCoupon);
+router.post('/create', createCoupon);
+router.put('/update', updateCoupon);
 
 module.exports = router;

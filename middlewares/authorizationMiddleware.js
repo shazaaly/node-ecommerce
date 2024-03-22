@@ -8,15 +8,21 @@ const authMiddleware = expressAsyncHandler(async(req, res, next) => {
     if(req.headers.authorization?.startsWith('Bearer')){
         let token = req.headers.authorization.split(' ')[1]
         if(token){
-            let decoded  = jwt.verify(token, process.env.JWT_SECRET)
-            const authenticatedUser = await User.findById(decoded.id)
-            req.user = authenticatedUser
-            next()
+            try {
+                let decoded  = jwt.verify(token, process.env.JWT_SECRET)
+                const authenticatedUser = await User.findById(decoded.id)
+                req.user = authenticatedUser
+                next()
+            } catch (error) {
+                res.status(401);
+                throw new Error('Invalid token')
+            }
         }else{
+            res.status(401);
             throw new Error('Token not found')
         }
-
     }else{
+        res.status(401);
         throw new Error('Token not found')
     }
 })
