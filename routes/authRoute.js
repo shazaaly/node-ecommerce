@@ -47,7 +47,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/users/register:
+ * /api/auth/register:
  *   post:
  *     summary: User register
  *     description: Register a new user
@@ -75,7 +75,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/users/forget-password:
+ * /api/auth/forget-password:
  *   post:
  *     summary: Request password reset
  *     description: Request a password reset for the provided email address
@@ -98,7 +98,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/users/reset-password/{token}:
+ * /api/auth/reset-password/{token}:
  *   get:
  *     summary: Reset password
  *     description: Reset the password using the provided reset token
@@ -122,7 +122,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/users/password:
+ * /api/auth/password:
  *   put:
  *     summary: Update Password
  *     description: Update the password of the authenticated user.
@@ -185,7 +185,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/users/login:
+ * /api/auth/login:
  *   post:
  *     summary: User login
  *     description: Authenticate and login a user with the provided credentials
@@ -231,7 +231,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/users/logout:
+ * /api/auth/logout:
  *   post:
  *     summary: Logout
  *     description: Logout the user by clearing access and refresh tokens.
@@ -271,7 +271,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/users/refresh:
+ * /api/auth/refresh:
  *   get:
  *     summary: Handle refresh token
  *     description: Handle refreshing access tokens using refresh tokens.
@@ -300,7 +300,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/users/all:
+ * /api/auth/all:
  *   get:
  *     summary: Get all users
  *     description: Retrieve all users from the database.
@@ -353,7 +353,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/users/block-user/{id}:
+ * /api/auth/block-user/{id}:
  *   put:
  *     summary: Block user
  *     description: Block a user by their ID (admin only)
@@ -381,7 +381,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/users/unblock-user/{id}:
+ * /api/auth/unblock-user/{id}:
  *   put:
  *     summary: Unblock user
  *     description: Unblock a user by their ID (admin only)
@@ -409,7 +409,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/auth/{id}:
  *   put:
  *     summary: Update user by ID
  *     description: Update a user in the database by their ID.
@@ -477,7 +477,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/auth/{id}:
  *   get:
  *     summary: Get user by ID
  *     description: Retrieve a user from the database by their ID.
@@ -542,7 +542,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/auth/{id}:
  *   delete:
  *     summary: Delete user by ID
  *     description: Delete a user from the database by their ID.
@@ -605,7 +605,7 @@ const router = express.Router();
 
 const {
     createUser,
-    loginUserController,
+    loginUser,
     allUsers,
     getUserById,
     deleteUser,
@@ -626,7 +626,7 @@ router.post('/forget-password', forgetPasswordToken);
 router.get('/reset-password/:token', resetPassword);
 
 router.put('/password', authMiddleware, updatePassword);
-router.post('/login', loginUserController); // No authMiddleware here
+router.post('/login', loginUser); // No authMiddleware here
 router.post('/logout', logout);
 router.get('/refresh', handleRefreshToken); // This should probably be a protected route
 

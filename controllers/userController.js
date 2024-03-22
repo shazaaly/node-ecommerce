@@ -20,7 +20,7 @@ const createUser = expressAsyncHandler(async (req, res) => {
 });
 
 /*login*/
-const loginUserController = expressAsyncHandler(async (req, res) => {
+const loginUser = expressAsyncHandler(async (req, res) => {
     const user = await User.findOne({ "email": req.body.email })
     if (!user) {
         return res.status(400).send("User not found")
@@ -198,11 +198,23 @@ const resetPassword = expressAsyncHandler(async (req, res) => {
 
 })
 
+const getUserWishList = expressAsyncHandler(async (req, res) => {
+    // /user/id/wishlist
+    const { id } = req.user;
+    const user = await User.findById(id).populate('wishlist')
+    if (!user) {
+        return res.status(400).send('User not found')
+    }
+    return res.json(user.wishlist)
+
+
+})
+
 
 
 module.exports = {
     createUser,
-    loginUserController,
+    loginUser,
     allUsers,
     getUserById,
     deleteUser,
@@ -211,5 +223,6 @@ module.exports = {
     logout,
     updatePassword,
     forgetPasswordToken,
-    resetPassword
+    resetPassword,
+    getUserWishList
 }; // Export the routes as an object

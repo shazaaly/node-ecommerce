@@ -24,6 +24,7 @@ const productRouter = require('./routes/productRouter');
 const emailRouter = require('./routes/emailRouter');
 const blogRouter = require('./routes/blogRouter');
 const categoryRouter = require('./routes/categoryRouters');
+const userRouter = require('./routes/userRouter');
 
 const bodyParser = require('body-parser');
 app.use(express.json());
@@ -34,11 +35,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
-app.use('/api/users', authRouter)
+app.use('/api/auth', authRouter)
 app.use('/api/emails', emailRouter)
 app.use('/api/product', productRouter)
 app.use('/api/blog', blogRouter)
 app.use('/api/category', categoryRouter)
+app.use('/api/users', userRouter)
 
 
 
