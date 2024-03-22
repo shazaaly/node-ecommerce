@@ -1,11 +1,56 @@
 const express = require('express');
 const router = express.Router();
+
+
 /**
  * @swagger
- * /register:
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User's email address.
+ *         password:
+ *           type: string
+ *           format: password
+ *           description: User's password.
+ *     Register:
+ *       type: object
+ *       required:
+ *         - firstName
+ *         - lastName
+ *         - email
+ *         - password
+ *         - mobile
+ *       properties:
+ *         firstName:
+ *           type: string
+ *           description: User's first name.
+ *         lastName:
+ *           type: string
+ *           description: User's last name.
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User's email address.
+ *         password:
+ *           type: string
+ *           format: password
+ *           description: User's password.
+ *         mobile:
+ *           type: string
+ *           description: User's mobile number.
+ */
+
+/**
+ * @swagger
+ * /api/users/register:
  *   post:
- *     summary: Register a new user
- *     description: Register a new user with the provided details
+ *     summary: User register
+ *     description: Register a new user
  *     tags:
  *       - Authentication
  *     requestBody:
@@ -13,19 +58,24 @@ const router = express.Router();
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/User'
+ *             $ref: '#/components/schemas/Register'
  *     responses:
  *       200:
  *         description: User registered successfully
  *       400:
  *         description: Invalid request body
+ *       401:
+ *         description: Unauthorized
  *       500:
  *         description: Internal server error
  */
 
+
+
+
 /**
  * @swagger
- * /forget-password:
+ * /api/users/forget-password:
  *   post:
  *     summary: Request password reset
  *     description: Request a password reset for the provided email address
@@ -48,7 +98,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /reset-password/{token}:
+ * /api/users/reset-password/{token}:
  *   get:
  *     summary: Reset password
  *     description: Reset the password using the provided reset token
@@ -72,34 +122,70 @@ const router = express.Router();
 
 /**
  * @swagger
- * /password:
+ * /api/users/password:
  *   put:
- *     summary: Update password
- *     description: Update the password for the authenticated user
+ *     summary: Update Password
+ *     description: Update the password of the authenticated user.
  *     tags:
- *       - Authentication
+ *       - Users
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/UpdatePassword'
+ *             type: object
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 description: New password for the user.
  *     responses:
  *       200:
- *         description: Password updated successfully
- *       400:
- *         description: Invalid request body
+ *         description: Password updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Confirmation message.
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized. User not authenticated.
+ *       404:
+ *         description: User not found.
  *       500:
- *         description: Internal server error
+ *         description: Internal server error.
  */
 
 /**
  * @swagger
- * /login:
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: The unique identifier of the user.
+ *           example: 5ffbb956ec78063d58920f07
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User's email address.
+ *         password:
+ *           type: string
+ *           format: password
+ *           description: User's password.
+ */
+
+
+/**
+ * @swagger
+ * /api/users/login:
  *   post:
  *     summary: User login
  *     description: Authenticate and login a user with the provided credentials
@@ -124,66 +210,150 @@ const router = express.Router();
 
 /**
  * @swagger
- * /logout:
+ * components:
+ *   schemas:
+ *     Login:
+ *       type: object
+ *       required:
+ *         - email
+ *         - password
+ *       properties:
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User's email address.
+ *         password:
+ *           type: string
+ *           format: password
+ *           description: User's password.
+ */
+
+
+/**
+ * @swagger
+ * /api/users/logout:
  *   post:
- *     summary: User logout
- *     description: Logout the authenticated user
+ *     summary: Logout
+ *     description: Logout the user by clearing access and refresh tokens.
  *     tags:
  *       - Authentication
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: User logged out successfully
+ *         description: Logged out successfully.
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized. No access or refresh tokens found.
  *       500:
- *         description: Internal server error
+ *         description: Internal server error.
  */
 
 /**
  * @swagger
- * /refresh:
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: The unique identifier of the user.
+ *           example: 5ffbb956ec78063d58920f07
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User's email address.
+ *         password:
+ *           type: string
+ *           format: password
+ *           description: User's password.
+ */
+
+
+
+/**
+ * @swagger
+ * /api/users/refresh:
  *   get:
- *     summary: Refresh access token
- *     description: Refresh the access token for the authenticated user
+ *     summary: Handle refresh token
+ *     description: Handle refreshing access tokens using refresh tokens.
  *     tags:
  *       - Authentication
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Access token refreshed successfully
+ *         description: Access token successfully refreshed.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   description: New access token.
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized. Refresh token missing, invalid, or user not found.
  *       500:
- *         description: Internal server error
+ *         description: Internal server error.
  */
+
+
+
+
 
 /**
  * @swagger
- * /all:
+ * /api/users/all:
  *   get:
  *     summary: Get all users
- *     description: Get a list of all users (admin only)
+ *     description: Retrieve all users from the database.
  *     tags:
  *       - Users
  *     security:
- *       - bearerAuth: []
+ *      - BearerAuth: []
+ * 
  *     responses:
  *       200:
- *         description: List of users retrieved successfully
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden
+ *         description: Successfully retrieved all users.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ * 
  *       500:
- *         description: Internal server error
+ *         description: Internal server error.
  */
 
 /**
  * @swagger
- * /block-user/{id}:
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: The unique identifier of the user.
+ *           example: 5ffbb956ec78063d58920f07
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User's email address.
+ *         password:
+ *           type: string
+ *           format: password
+ *           description: User's password.
+ *   securityDefinitions:
+ *   BearerAuth:
+ *     type: apiKey
+ *     name: Authorization
+ *     in: header
+ *     description: Enter your bearer token in the format `Bearer {token}`
+ */
+
+
+/**
+ * @swagger
+ * /api/users/block-user/{id}:
  *   put:
  *     summary: Block user
  *     description: Block a user by their ID (admin only)
@@ -211,7 +381,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /unblock-user/{id}:
+ * /api/users/unblock-user/{id}:
  *   put:
  *     summary: Unblock user
  *     description: Unblock a user by their ID (admin only)
@@ -239,101 +409,206 @@ const router = express.Router();
 
 /**
  * @swagger
- * /{id}:
+ * /api/users/{id}:
  *   put:
- *     summary: Update user
- *     description: Update a user by their ID (admin only)
+ *     summary: Update user by ID
+ *     description: Update a user in the database by their ID.
  *     tags:
  *       - Users
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: User ID
+ *         description: ID of the user to update.
  *         schema:
  *           type: string
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/UpdateUser'
+ *             $ref: '#/components/schemas/User'
  *     responses:
  *       200:
- *         description: User updated successfully
+ *         description: User successfully updated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
  *       400:
- *         description: Invalid request body
+ *         description: Bad request. Invalid user ID.
  *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden
+ *         description: Unauthorized. Token missing or invalid.
+ *       404:
+ *         description: User not found.
  *       500:
- *         description: Internal server error
+ *         description: Internal server error.
+ *
+ * securityDefinitions:
+ *   BearerAuth:
+ *     type: apiKey
+ *     name: Authorization
+ *     in: header
+ *     description: Enter your bearer token in the format `Bearer {token}`
  */
 
 /**
  * @swagger
- * /{id}:
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: The unique identifier of the user.
+ *           example: 5ffbb956ec78063d58920f07
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User's email address.
+ *         password:
+ *           type: string
+ *           format: password
+ *           description: User's password.
+ */
+
+/**
+ * @swagger
+ * /api/users/{id}:
  *   get:
  *     summary: Get user by ID
- *     description: Get a user by their ID (admin only)
+ *     description: Retrieve a user from the database by their ID.
  *     tags:
  *       - Users
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: User ID
+ *         description: ID of the user to retrieve.
  *         schema:
  *           type: string
+ *     security:
+ *       - BearerAuth: []
  *     responses:
  *       200:
- *         description: User retrieved successfully
+ *         description: Successfully retrieved the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Bad request. Invalid user ID.
  *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden
+ *         description: Unauthorized. Token missing or invalid.
+ *       404:
+ *         description: User not found.
  *       500:
- *         description: Internal server error
+ *         description: Internal server error.
+ *
+ * securityDefinitions:
+ *   BearerAuth:
+ *     type: apiKey
+ *     name: Authorization
+ *     in: header
+ *     description: Enter your bearer token in the format `Bearer {token}`
  */
 
 /**
  * @swagger
- * /{id}:
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: The unique identifier of the user.
+ *           example: 5ffbb956ec78063d58920f07
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User's email address.
+ *         password:
+ *           type: string
+ *           format: password
+ *           description: User's password.
+ */
+
+
+
+
+/**
+ * @swagger
+ * /api/users/{id}:
  *   delete:
- *     summary: Delete user
- *     description: Delete a user by their ID (admin only)
+ *     summary: Delete user by ID
+ *     description: Delete a user from the database by their ID.
  *     tags:
  *       - Users
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: User ID
+ *         description: ID of the user to delete.
  *         schema:
  *           type: string
+ *     security:
+ *       - BearerAuth: []
  *     responses:
  *       200:
- *         description: User deleted successfully
+ *         description: User successfully deleted.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Bad request. Invalid user ID.
  *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden
+ *         description: Unauthorized. Token missing or invalid.
+ *       404:
+ *         description: User not found.
  *       500:
- *         description: Internal server error
+ *         description: Internal server error.
+ *
+ * securityDefinitions:
+ *   BearerAuth:
+ *     type: apiKey
+ *     name: Authorization
+ *     in: header
+ *     description: Enter your bearer token in the format `Bearer {token}`
  */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: The unique identifier of the user.
+ *           example: 5ffbb956ec78063d58920f07
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User's email address.
+ *         password:
+ *           type: string
+ *           format: password
+ *           description: User's password.
+ */
+
+
 const {
     createUser,
     loginUserController,
-    allUsers, 
+    allUsers,
     getUserById,
-    deleteUser, 
+    deleteUser,
     updateUser,
     handleRefreshToken,
     logout,
@@ -343,7 +618,7 @@ const {
 } = require('../controllers/userController');
 
 
-const {authMiddleware, isAdmin, blockUser,unblockUser} = require('../middlewares/authorizationMiddleware');
+const { authMiddleware, isAdmin, blockUser, unblockUser } = require('../middlewares/authorizationMiddleware');
 
 // Public routes
 router.post('/register', createUser);
@@ -359,8 +634,8 @@ router.get('/refresh', handleRefreshToken); // This should probably be a protect
 router.get('/all', authMiddleware, allUsers);
 router.put('/block-user/:id', authMiddleware, isAdmin, blockUser);
 router.put('/unblock-user/:id', authMiddleware, isAdmin, unblockUser);
-router.put('/:id', authMiddleware, isAdmin, updateUser);
-router.get('/:id', authMiddleware, isAdmin, getUserById);
+router.put('/:id', authMiddleware, updateUser);
+router.get('/:id', authMiddleware, getUserById);
 router.delete('/:id', authMiddleware, deleteUser);
 
 
