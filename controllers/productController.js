@@ -224,6 +224,7 @@ const removeFromWishList = expressAsyncHandler(async (req, res) => {
 const addRating = expressAsyncHandler(async (req, res) => {
     const prod_id = req.params.id;
     const  { _id } = req.user;
+    const comment = req.body.comment;
     const product = await Product.findById(prod_id);
     if (!product) {
         return res.status(404).json({ message: "Product not found" });
@@ -234,7 +235,8 @@ const addRating = expressAsyncHandler(async (req, res) => {
     }
     product.ratings.push({
         stars: req.body.stars,
-        postedBy: _id
+        postedBy: _id,
+        comment
     });
     const updatedProduct = await product.save();
 

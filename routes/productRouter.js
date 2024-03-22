@@ -32,6 +32,7 @@ const {
  *         description: ID of the product to add rating to.
  *         schema:
  *           type: string
+ *         
  *     requestBody:
  *       required: true
  *       content:
@@ -42,6 +43,9 @@ const {
  *               stars:
  *                 type: number
  *                 description: The rating to be added (out of 5 stars).
+ *               comment:
+ *                 type: string
+ *                 description: The comment to be added.
  *     responses:
  *       200:
  *         description: Rating added successfully.
