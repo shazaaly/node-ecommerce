@@ -61,8 +61,27 @@ const updateCoupon = async (req, res) => {
 
     res.status(200).json(updatedCoupon);
 }
+const deleteCoupon = async (req, res) => {
+    const couponId = req.params.id;
+    if (!validateId(couponId)) {
+        return res.status(400).json({ error: 'Invalid Coupon Id' });
+    }
+
+    const coupon = await Coupon.findById(couponId);
+    if (!coupon) {
+        return res.status(404).json({ error: 'Coupon not found' });
+    }
+
+    const deletedCoupon = await coupon.remove();
+    if(!deletedCoupon) {
+        return res.status(400).json({ error: 'Coupon could not be deleted' });
+    }
+
+    res.status(200).json(deletedCoupon);
+}
 
 module.exports =  {
     createCoupon,
-    updateCoupon
+    updateCoupon,
+    deleteCoupon
 } ;
