@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { isAdmin, authMiddleware } = require('../middlewares/authorizationMiddleware');
-
+const { uploadPhoto, resizeImage } = require('../middlewares/multerMiddleware')
 const {
     createProduct,
     getProductById,
@@ -137,5 +137,12 @@ router.post('/:id/removeFromWishList', authMiddleware, removeFromWishList)
 router.post('/:id/addrating', authMiddleware, addRating)
 router.put('/:id', authMiddleware, isAdmin, updateProduct);
 router.delete('/:id', authMiddleware, isAdmin, deleteProduct);
-
+// POST route to handle multiple file uploads and resizing
+router.post('/upload-multiple', uploadPhoto.array('files', 5), resizeImage, (req, res, next) => {
+    // This route allows multiple file uploads, up to 5 as specified in the array method.
+    res.status(200).json({
+        message: 'Files uploaded and resized successfully',
+        files: req.files
+    });
+});
 module.exports = router;

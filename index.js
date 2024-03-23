@@ -48,6 +48,14 @@ app.use('/api/coupon', couponRouter)
 
 app.use(ErrHandler);
 app.use(notFound);
+app.use((err, req, res, next) => {
+    if (err) {
+        res.status(500).send({ error: err.message });
+    } else {
+        next();
+    }
+});
+
 
 // Server
 app.listen(PORT, () => {
