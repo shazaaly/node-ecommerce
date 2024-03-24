@@ -250,6 +250,21 @@ const adminLogin = expressAsyncHandler(async (req, res) => {
         
     }
 })
+const adminLogOut = expressAsyncHandler(async (req, res, next) => {
+    const accessToken = req.cookies.accessToken
+    const refreshToken = req.cookies.refreshToken
+    console.log
+    if (!accessToken && !refreshToken) {
+        return res.status(401).send('Unauthorized')
+    }
+    else {
+        res.clearCookie('accessToken')
+        res.clearCookie('refreshToken')
+        res.status(200).send('Logged out successfully')
+
+    }
+
+})
 
 
 module.exports = {
@@ -265,5 +280,6 @@ module.exports = {
     forgetPasswordToken,
     resetPassword,
     getUserWishList,
-    adminLogin
+    adminLogin,
+    adminLogOut
 }; // Export the routes as an object
