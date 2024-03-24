@@ -11,7 +11,8 @@ const {
     addToWishList,
     removeFromWishList,
     addRating,
-    getAverageRating
+    getAverageRating,
+    uploadImagesCtrl
 } = require('../controllers/productController');
 /**
  * @swagger
@@ -140,11 +141,7 @@ router.delete('/:id', authMiddleware, isAdmin, deleteProduct);
 // POST route to handle multiple file uploads and resizing
 
 
-router.post('/upload', uploadPhoto.array('images', 5), resizeAndUploadImage, (req, res) => {
-    res.json({
-      message: "Images uploaded successfully",
-      urls: req.imageUrls,
-    });
-  });
+router.post('/:id/upload', uploadPhoto.array('images', 5), resizeAndUploadImage, uploadImagesCtrl);
+  
   
 module.exports = router;

@@ -3,6 +3,7 @@ const expressAsyncHandler = require('express-async-handler');
 const validateId = require('../utils/validateObjectId');
 const slugify = require('slugify');
 const User = require('../models/userModel');
+const resizeAndUploadImage = require('../middlewares/imageUploadMiddleware');
 
 
 const createProduct = expressAsyncHandler(async (req, res) => {
@@ -262,7 +263,20 @@ const getAverageRating = expressAsyncHandler(async (req, res) => {
 
 
 })
+const uploadImagesCtrl = async(req, res) => {
+    const _id = req.params.id;
 
+    const product = await Product.findById(_id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+    if (!req.files || req.files.length === 0) return res.status(400).json({ message: 'No images uploaded' });
+    req.imageUrls.map((url)=>{
+        product.images.push(url)
+    })
+    await product.save()
+    res.json({
+      message: "Images uploaded successfully",
+      urls: req.imageUrls,
+    })}
 
 
 module.exports = {
@@ -274,5 +288,6 @@ module.exports = {
     addToWishList,
     removeFromWishList,
     addRating,
-    getAverageRating
+    getAverageRating, 
+    uploadImagesCtrl
 };
