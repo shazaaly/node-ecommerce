@@ -210,6 +210,46 @@ const getUserWishList = expressAsyncHandler(async (req, res) => {
 
 })
 
+const adminLogin = expressAsyncHandler(async (req, res) => {
+    const {email, password} = req.body
+    const user = await User.findOne({email})
+    if (!user) {
+        return res.status(400).send('User not found')
+    }
+    const matched = await user.isPasswordMatched(password)
+    if (!matched) {
+
+        return res.status(400).send('Invalid credentials')
+    }
+    if(user.role !== 'admin'){
+        return res.status(400).send('User not authorized')
+    }
+    try {
+        const accessToken = generateToken(user.id);
+        const refreshToken = refreshTokenGenerator(user.id);
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 24 * 3,
+    
+        })
+        res.json({
+            "message": 'Admin login successfull',
+            "id": user.id,
+            "token": accessToken,
+            "refreshToken": refreshToken,
+            "firstName": user.firstName,
+            "lastName": user.lastName,
+            "mobile": user.mobile,
+            "email": user.email,
+            "password": user.password,
+            "role" : user.role
+        })
+        
+    } catch (error) {
+        return res.status(400).send('Error')
+        
+    }
+})
 
 
 module.exports = {
@@ -224,5 +264,6 @@ module.exports = {
     updatePassword,
     forgetPasswordToken,
     resetPassword,
-    getUserWishList
+    getUserWishList,
+    adminLogin
 }; // Export the routes as an object
