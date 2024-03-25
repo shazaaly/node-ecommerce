@@ -4,7 +4,7 @@ const User = require('../models/userModel')
 jwt = require('jsonwebtoken')
 
 /* set req.user to the authenticated user */
-const authMiddleware = expressAsyncHandler(async(req, res, next) => { 
+const authMiddleware = async(req, res, next) => { 
     if(req.headers.authorization?.startsWith('Bearer')){
         let token = req.headers.authorization.split(' ')[1]
         if(token){
@@ -25,7 +25,7 @@ const authMiddleware = expressAsyncHandler(async(req, res, next) => {
         res.status(401);
         throw new Error('Token not found')
     }
-})
+}
 /* check if the user is an admin */
 const isAdmin = expressAsyncHandler(async(req, res, next)=>{
     const {email} = req.user
@@ -80,4 +80,9 @@ const unblockUser = expressAsyncHandler(async(req, res, next)=>{
 
 })
 
-module.exports = {authMiddleware, isAdmin, blockUser, unblockUser}
+module.exports = {
+    authMiddleware, 
+    isAdmin, 
+    blockUser, 
+    unblockUser
+}
