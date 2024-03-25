@@ -36,4 +36,20 @@ const createOrder = expressAsyncHandler(async (req, res) => {
     return res.status(201).json({ message: 'Order created', order });
 })
 
-module.exports = { createOrder }
+const changeOrderStatus = expressAsyncHandler(async (req, res) => {
+    const orderId = req.params.id;
+    const order = await Order.findOne({ _id: orderId });
+    if (!order) {
+        res.status(404).send({ message: 'Order not found' });
+        return
+    }
+    const updatedOrder = await Order.findOneAndUpdate(
+        { _id: orderId },
+        { status: req.body.status },
+        { new: true }
+        );
+    return res.status(200).json({ message: 'Order status updated', updatedOrder });
+
+})
+
+module.exports = { createOrder, changeOrderStatus }
