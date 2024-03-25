@@ -25,6 +25,7 @@ const categoryRouter = require('./routes/categoryRouters');
 const userRouter = require('./routes/userRouter');
 const couponRouter = require('./routes/couponRouter');
 const cartRouter = require('./routes/cartRouter');
+const orderRoute = require('./routes/orderRoute');
 
 const bodyParser = require('body-parser');
 app.use(express.json());
@@ -43,6 +44,7 @@ app.use('/api/category', categoryRouter)
 app.use('/api/users', userRouter)
 app.use('/api/coupon', couponRouter)
 app.use('/api/cart', cartRouter)
+app.use('/api/order', orderRoute)
 
 
 
