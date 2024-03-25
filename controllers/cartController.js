@@ -9,8 +9,13 @@ const addToCart = expressAsyncHandler(async (req, res) => {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     const { qty, product } = req.body;
-    if(qt === 0) {
-        return res.status(400).json({ message: 'Quantity cannot be zero' });
+    if(qty <= 0) {
+        return res.status(400).json({ message: 'Quantity must be more than zero' });
+    }
+    const productToAdd = await Product.findById(product);
+    const availableQty = productToAdd.quantity;
+    if (qty > availableQty) {
+        return res.status(400).json({ message: 'Quantity not available' });
     }
     if (!qty || !product) {
         return res.status(400).json({ message: 'Invalid request' });
