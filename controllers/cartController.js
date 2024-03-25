@@ -1,6 +1,8 @@
 const expressAsyncHandler = require('express-async-handler');
 const Cart = require('../models/cartModel');
 const Product = require('../models/productModel');
+const Coupon = require('../models/couponModel');
+const User = require('../models/userModel');
 
 const addToCart = expressAsyncHandler(async (req, res) => {
     const user = req.user
@@ -40,8 +42,8 @@ const addToCart = expressAsyncHandler(async (req, res) => {
             cartItems: [{ qty, product }]
         });
     }
-    const updatedCart = await cart.save();
-    return res.status(201).json({ message: 'Product added to cart', cart: updatedCart });
+    await User.findByIdAndUpdate(user._id, { cart: cart });
+    return res.status(201).json({ message: 'Product added to cart', cart });
 })
 
 const getCart = expressAsyncHandler(async (req, res) => {
@@ -83,9 +85,29 @@ const emptyCart = expressAsyncHandler(async (req, res) => {
     return res.status(200).json({ message: 'Cart emptied', 'cart' : cart.cartItems });
 })
 
+const applyCoupon = expressAsyncHandler(async (req, res) => {
+    const coupon = req.body.code;
+    if (!coupon) {
+        return res.status(400).json({ message: 'Coupon code is required' });
+    }
+    const validCoupon = await Coupon.findOne({ code: coupon });
+    if (!validCoupon || validCoupon.expiryDate < new Date()) {
+        return res.status(404).json({ message: 'Please Enter a valid coupon!' });
+    }
+    const user = req.user
+    console.log(user)
+    const cart = user.cart
+    console.log(cart)
+    let totalCart = cart.totalCart
+    totalCart = totalCart * coupon.discountPercentage / 100;
+    return res.status(200).json({ message: 'Coupon applied', totalCart });
+
+})
+
 module.exports = {
     addToCart,
     getCart,
     getCartTotal,
-    emptyCart
+    emptyCart,
+    applyCoupon
 };

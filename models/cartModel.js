@@ -19,10 +19,10 @@ const cartSchema = new mongoose.Schema({
 
 })
 
-// cartSchema.virtual('cartTotal').get(function() {
-//     return this.cartItems.reduce((total, item) => {
-//       return total + (item.qty * item.price);
-//     }, 0);
-//   });
+cartSchema.virtual('cartTotal').get(function() {
+    return this.cartItems.reduce((total, item) => {
+      return total + (item.qty * item.price);
+    }, 0);
+  });
 
 module.exports = mongoose.model('Cart', cartSchema);
