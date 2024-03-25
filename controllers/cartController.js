@@ -69,8 +69,23 @@ const getCartTotal = expressAsyncHandler(async (req, res) => {
     return res.status(200).json({"totla cart price" : total})
 })
 
+const emptyCart = expressAsyncHandler(async (req, res) => {
+    const user = req.user
+    if (!user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+    const cart = await Cart.findOne({ user: user._id });
+    if (!cart) {
+        return res.status(404).json({ message: 'Cart not found' });
+    }
+    cart.cartItems = [];
+    await cart.save();
+    return res.status(200).json({ message: 'Cart emptied', 'cart' : cart.cartItems });
+})
+
 module.exports = {
     addToCart,
     getCart,
-    getCartTotal
+    getCartTotal,
+    emptyCart
 };
