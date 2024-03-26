@@ -49,7 +49,7 @@ app.use('/api/users', userRouter)
 app.use('/api/coupon', couponRouter)
 app.use('/api/cart', cartRouter)
 app.use('/api/order', orderRoute)
-app.use('/api/search-products', searchRouter)
+app.use('/api/search', searchRouter)
 
 
 
