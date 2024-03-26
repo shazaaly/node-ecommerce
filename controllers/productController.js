@@ -6,6 +6,23 @@ const User = require('../models/userModel');
 const resizeAndUploadImage = require('../middlewares/imageUploadMiddleware');
 const elasticsearchClient = require('../utils/elasticSearchClient');
 
+
+///////////
+// Function to index a product document
+async function indexProduct(product) {
+    try {
+      const response = await elasticsearchClient.index({
+        index: 'products', // Name of the index
+        body: product
+      });
+      console.log('Indexed product:', response);
+    } catch (error) {
+      console.error('Error indexing product:', error);
+    }
+  }
+
+
+
 const createProduct = expressAsyncHandler(async (req, res) => {
     try {
         if (req.body.title) {
@@ -25,6 +42,7 @@ const createProduct = expressAsyncHandler(async (req, res) => {
     if (!savedProduct) {
         return res.status(500).json({ message: "Product could not be saved" })
     }
+    
     res.status(201).json({
         "product": savedProduct
     })
