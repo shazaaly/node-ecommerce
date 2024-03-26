@@ -4,7 +4,7 @@ const validateId = require('../utils/validateObjectId');
 const slugify = require('slugify');
 const User = require('../models/userModel');
 const resizeAndUploadImage = require('../middlewares/imageUploadMiddleware');
-
+const elasticsearchClient = require('../utils/elasticSearchClient');
 
 const createProduct = expressAsyncHandler(async (req, res) => {
     try {
