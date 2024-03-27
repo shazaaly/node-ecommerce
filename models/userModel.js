@@ -1,7 +1,7 @@
 const expressAsyncHandler = require('express-async-handler');
 const mongoose = require('mongoose');
 const schema = mongoose.Schema;
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 
 const UserSchema = new schema({
