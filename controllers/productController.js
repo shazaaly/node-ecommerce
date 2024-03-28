@@ -39,6 +39,10 @@ const createProduct = expressAsyncHandler(async (req, res) => {
     }
     const product = new Product(req.body)
     const savedProduct = await product.save()
+    indexProduct(savedProduct);
+    const cat = savedProduct.category
+    const cat.toString()
+
     if (!savedProduct) {
         return res.status(500).json({ message: "Product could not be saved" })
     }
