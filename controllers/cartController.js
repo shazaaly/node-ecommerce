@@ -100,15 +100,24 @@ const applyCoupon = expressAsyncHandler(async (req, res) => {
     if (!validCoupon || validCoupon.expiryDate < new Date()) {
         return res.status(404).json({ message: 'Please Enter a valid coupon!' });
     }
-    const user = req.user
-    console.log(user)
-    const cart = user.cart
-    console.log(cart)
-    let totalCart = cart.totalCart
-    totalCart = totalCart * coupon.discountPercentage / 100;
-    return res.status(200).json({ message: 'Coupon applied', totalCart });
+    const user = req.user;
+    const cart = user.cart;
+    console.log(cart);
 
-})
+    // Calculate totalCart here
+    let totalCart = 0;
+    for (let item of cart[0].cartItems) {
+        const prodId = item.product.toString();
+        const product = await Product.findById(prodId);
+        totalCart += parseFloat((product.price * product.quantity).toFixed(2));
+
+    }
+
+    // Apply the discount
+    totalCart = totalCart * (1 - validCoupon.discountPercentage / 100);
+
+    return res.status(200).json({ message: 'Coupon applied', totalCart });
+});
 
 module.exports = {
     addToCart,

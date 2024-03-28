@@ -3,6 +3,7 @@ const expressAsyncHandler = require('express-async-handler');
 const validateId = require('../utils/validateObjectId');
 const slugify = require('slugify');
 const User = require('../models/userModel');
+const Category = require('../models/categoryModel');
 const resizeAndUploadImage = require('../middlewares/imageUploadMiddleware');
 const elasticsearchClient = require('../utils/elasticSearchClient');
 
@@ -40,7 +41,7 @@ const createProduct = expressAsyncHandler(async (req, res) => {
     const product = new Product(req.body)
     const savedProduct = await product.save()
     indexProduct(savedProduct);
-    const cat = savedProduct.category
+    let cat = savedProduct.category
     cat = cat.toString()
     const category = await Category.findById(cat)
     category.products.push(savedProduct._id)
