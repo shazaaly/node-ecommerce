@@ -41,8 +41,9 @@ const createProduct = expressAsyncHandler(async (req, res) => {
     const savedProduct = await product.save()
     indexProduct(savedProduct);
     const cat = savedProduct.category
-    const cat.toString()
-
+    cat = cat.toString()
+    const category = await Category.findById(cat)
+    category.products.push(savedProduct._id)
     if (!savedProduct) {
         return res.status(500).json({ message: "Product could not be saved" })
     }
