@@ -41,7 +41,6 @@ const addToCart = expressAsyncHandler(async (req, res) => {
     return res.status(201).json({ message: 'Product added to cart', cart: updatedCart });
 });
 
-
 const getCart = expressAsyncHandler(async (req, res) => {
     const user = req.user
     if (!user) {
