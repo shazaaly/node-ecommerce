@@ -5,35 +5,28 @@ const Coupon = require('../models/couponModel');
 const User = require('../models/userModel');
 
 const addToCart = expressAsyncHandler(async (req, res) => {
-    const user = req.user
-    // console.log(user)
+    const user = req.user;
     if (!user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     const { qty, product } = req.body;
-    if(qty <= 0) {
-        return res.status(400).json({ message: 'Quantity must be more than zero' });
-    }
-    const productToAdd = await Product.findById(product);
-    const availableQty = productToAdd.quantity;
-    if (qty > availableQty) {
-        return res.status(400).json({ message: 'Quantity not available' });
-    }
-    if (!qty || !product) {
+    if (!qty || !product || qty <= 0) {
         return res.status(400).json({ message: 'Invalid request' });
     }
-    const productExist = await Product.findById(product);
-    if (!productExist) {
-        return res.status(404).json({ message: 'Product not found' });
+
+    const productToAdd = await Product.findById(product);
+    if (!productToAdd || qty > productToAdd.qty) {
+        return res.status(404).json({ message: 'Product not found or quantity not available' });
     }
+
     let cart = await Cart.findOne({ user: user._id });
     if (cart) {
-        //check if product exist in cart
-        const existingItem = cart.cartItems.find((item) => item.product.toString() === product)
+        // Check if product exists in cart
+        const existingItem = cart.cartItems.find(item => item.product.toString() === product);
         if (existingItem) {
             existingItem.qty += qty;
         } else {
-            cart.cartItems.push({ qty, product});
+            cart.cartItems.push({ qty, product });
         }
     } else {
         // If cart does not exist, create a new cart
@@ -42,9 +35,12 @@ const addToCart = expressAsyncHandler(async (req, res) => {
             cartItems: [{ qty, product }]
         });
     }
-    await User.findByIdAndUpdate(user._id, { cart: cart });
-    return res.status(201).json({ message: 'Product added to cart', cart });
-})
+    
+    await cart.save(); // Save changes to the cart
+    const updatedCart = await Cart.findOne({ user: user._id }).populate('cartItems.product');
+    return res.status(201).json({ message: 'Product added to cart', cart: updatedCart });
+});
+
 
 const getCart = expressAsyncHandler(async (req, res) => {
     const user = req.user
@@ -56,20 +52,22 @@ const getCart = expressAsyncHandler(async (req, res) => {
 })
 
 const getCartTotal = expressAsyncHandler(async (req, res) => {
-    const user = req.user
-    if (!user) {
+    const user = req.user;
+    const userId = user._id.toString();
+    console.log(userId, 'userId', 'user', user);
+    if (!userId) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
-    const cart = await Cart.findOne({user : user._id}).populate('cartItems.product')
+    const cart = await Cart.findOne({user : userId});
+    console.log(cart);
     if(!cart){
-        return res.status(404).json({message: 'Cart not found'})
+        return res.status(404).json({message: 'Cart not found'});
     }
     const total = cart.cartItems.reduce((acc, item) => {
         return acc + (item.product.price * item.qty);
-        
-    },0)    
-    return res.status(200).json({"totla cart price" : total})
-})
+    }, 0);
+    return res.status(200).json({"total cart price" : total});
+});
 
 const emptyCart = expressAsyncHandler(async (req, res) => {
     const user = req.user
