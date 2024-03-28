@@ -63,14 +63,16 @@ const getCartTotal = expressAsyncHandler(async (req, res) => {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     const cart = await Cart.findOne({ user: userId });
+    console.log(user.cart)
     if (!cart) {
         return res.status(404).json({ message: 'Cart not found' });
     }
     // total price of all items in the cart
     // loop cart items
     let cartTotal = 0;
+    const userCart = user.cart;
 
-    for (let item of cart.cartItems) {
+    for (let item of userCart) {
         const prodId = item.product.toString()
         const product = await Product.findById(prodId)
         const price = product.price;
