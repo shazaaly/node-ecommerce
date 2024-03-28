@@ -26,8 +26,11 @@ const addToCart = expressAsyncHandler(async (req, res) => {
         if (existingItem) {
             existingItem.qty += qty;
         } else {
-            cart.cartItems.push({ qty, product });
+            // cart.cartItems.push({ qty, product });
+            user.cart.push({ qty, product });
         }
+        await user.save(); // Save changes to the user
+
     } else {
         // If cart does not exist, create a new cart
         cart = new Cart({
@@ -37,7 +40,10 @@ const addToCart = expressAsyncHandler(async (req, res) => {
     }
 
     await cart.save(); // Save changes to the cart
+    console.log(user.cart);
+
     const updatedCart = await Cart.findOne({ user: user._id }).populate('cartItems.product');
+    console.log(user.cart);
     return res.status(201).json({ message: 'Product added to cart', cart: updatedCart });
 });
 
@@ -103,6 +109,7 @@ const applyCoupon = expressAsyncHandler(async (req, res) => {
     const user = req.user;
     const cart = user.cart;
     console.log(cart);
+    console.log(user);
 
     // Calculate totalCart here
     let totalCart = 0;
