@@ -113,7 +113,7 @@ const applyCoupon = expressAsyncHandler(async (req, res) => {
 
     // Calculate totalCart here
     let totalCart = 0;
-    for (let item of cart[0].cartItems) {
+    for (let item of cart) {
         const prodId = item.product.toString();
         const product = await Product.findById(prodId);
         totalCart += parseFloat((product.price * product.quantity).toFixed(2));
