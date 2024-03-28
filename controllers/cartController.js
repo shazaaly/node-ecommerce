@@ -35,7 +35,7 @@ const addToCart = expressAsyncHandler(async (req, res) => {
             cartItems: [{ qty, product }]
         });
     }
-    
+
     await cart.save(); // Save changes to the cart
     const updatedCart = await Cart.findOne({ user: user._id }).populate('cartItems.product');
     return res.status(201).json({ message: 'Product added to cart', cart: updatedCart });
@@ -53,19 +53,28 @@ const getCart = expressAsyncHandler(async (req, res) => {
 const getCartTotal = expressAsyncHandler(async (req, res) => {
     const user = req.user;
     const userId = user._id.toString();
-    console.log(userId, 'userId', 'user', user);
     if (!userId) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
-    const cart = await Cart.findOne({user : userId});
-    console.log(cart);
-    if(!cart){
-        return res.status(404).json({message: 'Cart not found'});
+    const cart = await Cart.findOne({ user: userId });
+    if (!cart) {
+        return res.status(404).json({ message: 'Cart not found' });
     }
-    const total = cart.cartItems.reduce((acc, item) => {
-        return acc + (item.product.price * item.qty);
-    }, 0);
-    return res.status(200).json({"total cart price" : total});
+    // total price of all items in the cart
+    // loop cart items
+    let cartTotal = 0;
+
+    for (let item of cart.cartItems) {
+        const prodId = item.product.toString()
+        const product = await Product.findById(prodId)
+        const price = product.price;
+        const qty = item.qty;
+        const itemTotal = price * qty;
+        cartTotal += itemTotal;
+    }
+
+
+    return res.status(200).json({ "total cart price": cartTotal });
 });
 
 const emptyCart = expressAsyncHandler(async (req, res) => {
@@ -79,7 +88,7 @@ const emptyCart = expressAsyncHandler(async (req, res) => {
     }
     cart.cartItems = [];
     await cart.save();
-    return res.status(200).json({ message: 'Cart emptied', 'cart' : cart.cartItems });
+    return res.status(200).json({ message: 'Cart emptied', 'cart': cart.cartItems });
 })
 
 const applyCoupon = expressAsyncHandler(async (req, res) => {
