@@ -1,3 +1,5 @@
+const express = require('express');
+const router = express.Router();
 const mongoose = require('mongoose');
 
 router.get('/test-db-connection', async (req, res) => {
@@ -8,3 +10,5 @@ router.get('/test-db-connection', async (req, res) => {
     res.status(500).send('Failed to connect to MongoDB: ' + err.message);
   }
 });
+
+module.exports = router;
