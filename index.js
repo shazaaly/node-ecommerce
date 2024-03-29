@@ -34,7 +34,9 @@ const searchRouter = require('./routes/searchRouter');
 const bodyParser = require('body-parser');
 app.use(express.json());
 
-
+app.get('/', function (req, res) {
+    res.send('Hello World!')
+  })
 // Routes
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
