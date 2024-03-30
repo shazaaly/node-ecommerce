@@ -52,6 +52,26 @@ Folder Structure
 - `middlewares/`: Custom middleware functions.
 - `utils/`: Utility functions.
 
+
+
+The application is deployed on Heroku. Feel free to test the live endpoints:
+
+- **Base URL**: `https://enigmatic-ravine-23031-1df92bd6df4a.herokuapp.com`
+
+### Endpoints
+
+| Method | Endpoint                | Description                             | Parameters          |
+|--------|-------------------------|-----------------------------------------|---------------------|
+| GET    | `/api/resource`         | Retrieves all resources.                | N/A                 |
+| POST   | `/api/resource`         | Creates a new resource.                 | `{ "data": "value"}`|
+| GET    | `/api/resource/{id}`    | Retrieves a resource by ID.             | N/A                 |
+| PUT    | `/api/resource/{id}`    | Updates a resource by ID.               | `{ "data": "new value"}`|
+| DELETE | `/api/resource/{id}`    | Deletes a resource by ID.               | N/A                 |
+
+
+For more details on how to use these endpoints, please refer to the [API Documentation] - #will be added soon
+
+
 Contributing
 Contributions are welcome!
 
