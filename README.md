@@ -68,8 +68,47 @@ The application is deployed on Heroku. Feel free to test the live endpoints:
 | PUT    | `/api/resource/{id}`    | Updates a resource by ID.               | `{ "data": "new value"}`|
 | DELETE | `/api/resource/{id}`    | Deletes a resource by ID.               | N/A                 |
 
+Using the Endpoints
 
+To use these endpoints, please ensure you have the necessary authentication tokens as many operations are protected. The tokens are obtained after successfully logging in.
+
+markdown
+
+## Authentication
+
+To perform operations such as creating categories, adding to cart, creating orders, or creating coupons, you must be authenticated. Use the `POST /api/auth/login` endpoint to log in and obtain your Bearer token.
+
+Here's an example of using the `POST /api/category` endpoint to create a new category:
+
+```http
+POST /api/category
+Authorization: Bearer <your-token>
+Content-Type: application/json
+
+{
+  "name": "Electronics",
+  "description": "A category for all electronic products"
+}
+
+On successful creation, you'll receive a response like:
+
+json
+
+{
+  "id": "new-category-id",
+  "name": "Electronics",
+  "description": "A category for all electronic products"
+}
+
+Note: Replace `<your-token>` with your actual auth token obtained after login.
+
+---
+
+Be sure to replace any placeholder text like `<your-token>` with actual valid tokens or parameters fo
 For more details on how to use these endpoints, please refer to the [API Documentation] - #will be added soon
+
+POSTMAN Doc.
+https://documenter.getpostman.com/view/10270559/2sA35G4hMc
 
 
 Contributing
