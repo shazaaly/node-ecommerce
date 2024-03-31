@@ -28,6 +28,8 @@ const addToCart = expressAsyncHandler(async (req, res) => {
         } else {
             // cart.cartItems.push({ qty, product });
             user.cart.push({ qty, product });
+            cart.cartItems.push({ qty, product });
+
         }
         await user.save(); // Save changes to the user
 
@@ -40,10 +42,9 @@ const addToCart = expressAsyncHandler(async (req, res) => {
     }
 
     await cart.save(); // Save changes to the cart
-    console.log(user.cart);
-
     const updatedCart = await Cart.findOne({ user: user._id }).populate('cartItems.product');
     console.log(user.cart);
+    console.log(cart.cartItems);
     return res.status(201).json({ message: 'Product added to cart', cart: updatedCart });
 });
 
@@ -58,6 +59,7 @@ const getCart = expressAsyncHandler(async (req, res) => {
 
 const getCartTotal = expressAsyncHandler(async (req, res) => {
     const user = req.user;
+    console.log(user);
     const userId = user._id.toString();
     if (!userId) {
         return res.status(401).json({ message: 'Unauthorized' });
@@ -79,6 +81,8 @@ const getCartTotal = expressAsyncHandler(async (req, res) => {
         const qty = item.qty;
         const itemTotal = price * qty;
         cartTotal += itemTotal;
+        console.log(cartTotal);
+
     }
 
 
