@@ -6,46 +6,45 @@ const User = require('../models/userModel');
 
 const addToCart = expressAsyncHandler(async (req, res) => {
     const user = req.user;
-    // if (!user) {
-    //     return res.status(401).json({ message: 'Unauthorized' });
-    // }
-    // const { qty, product } = req.body;
-    // if (!qty || !product || qty <= 0) {
-    //     return res.status(400).json({ message: 'Invalid request' });
-    // }
+    if (!user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+    const { qty, product } = req.body;
+    if (!qty || !product || qty <= 0) {
+        return res.status(400).json({ message: 'Invalid request' });
+    }
 
-    // const productToAdd = await Product.findById(product);
-    // if (!productToAdd || qty > productToAdd.qty) {
-    //     return res.status(404).json({ message: 'Product not found or quantity not available' });
-    // }
+    const productToAdd = await Product.findById(product);
+    if (!productToAdd || qty > productToAdd.qty) {
+        return res.status(404).json({ message: 'Product not found or quantity not available' });
+    }
 
-    // let cart = await Cart.findOne({ user: user._id });
-    // console.log('cart', cart);
+    let cart = await Cart.findOne({ user: user._id });
 
-    // if (cart) {
-    //     // Check if product exists in cart
-    //     const existingItem = cart.cartItems.find(item => item.product.toString() === product);
-    //     if (existingItem) {
-    //         existingItem.qty += qty;
-    //     } else {
-    //         const newItem = { qty, product };
-    //         user.cart.push(newItem);
-    //         cart.cartItems.push(newItem);
+    if (cart) {
+        // Check if product exists in cart
+        const existingItem = cart.cartItems.find(item => item.product.toString() === product);
+        if (existingItem) {
+            existingItem.qty += qty;
+        } else {
+            const newItem = { qty, product };
+            user.cart.push(newItem);
+            cart.cartItems.push(newItem);
 
-    //     }
-    //     await user.save(); // Save changes to the user
+        }
+        await user.save();
 
-    // } else {
-    //     // If cart does not exist, create a new cart
-    //     cart = new Cart({
-    //         user: user._id,
-    //         cartItems: [{ qty, product }]
-    //     });
-    // }
+    } else {
+        // If cart does not exist, create a new cart
+        cart = new Cart({
+            user: user._id,
+            cartItems: [{ qty, product }]
+        });
+    }
 
-    // await cart.save(); // Save changes to the cart
-    // const updatedCart = await Cart.findOne({ user: user._id }).populate('cartItems.product');
-    // return res.status(201).json({ message: 'Product added to cart', cart: updatedCart });
+    await cart.save(); // Save changes to the cart
+    const updatedCart = await Cart.findOne({ user: user._id }).populate('cartItems.product');
+    return res.status(201).json({ message: 'Product added to cart', cart: updatedCart });
 });
 
 const getCart = expressAsyncHandler(async (req, res) => {
