@@ -10,6 +10,7 @@ const morgan = require('morgan');
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 
 // Setup Swagger
@@ -31,7 +32,7 @@ const orderRoute = require('./routes/orderRoute');
 const searchRouter = require('./routes/searchRouter');
 
 
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 
 app.get('/', function (req, res) {
     res.send('Hello World!')
