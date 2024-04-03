@@ -151,9 +151,9 @@ const applyCoupon = expressAsyncHandler(async (req, res) => {
     }
 
     // Apply the discount
-    totalCart = totalCart * (1 - validCoupon.discountPercentage / 100);
+    cartTotal = cartTotal * (1 - validCoupon.discountPercentage / 100);
 
-    return res.status(200).json({ message: 'Coupon applied', totalCart });
+    return res.status(200).json({ message: 'Coupon applied', cartTotal });
 });
 
 module.exports = {
