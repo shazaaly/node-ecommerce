@@ -125,7 +125,7 @@ const applyCoupon = expressAsyncHandler(async (req, res) => {
     console.log(cart);
 
     // Calculate totalCart here
-    let totalCart = 0;
+    let cartTotal = 0;
 
   const userCart = user.cart;
 
