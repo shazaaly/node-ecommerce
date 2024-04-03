@@ -20,15 +20,17 @@ const addToCart = expressAsyncHandler(async (req, res) => {
     }
 
     let cart = await Cart.findOne({ user: user._id });
+    console.log('cart', cart);
+
     if (cart) {
         // Check if product exists in cart
         const existingItem = cart.cartItems.find(item => item.product.toString() === product);
         if (existingItem) {
             existingItem.qty += qty;
         } else {
-            // cart.cartItems.push({ qty, product });
-            user.cart.push({ qty, product });
-            cart.cartItems.push({ qty, product });
+            const newItem = { qty, product };
+            user.cart.push(newItem);
+            cart.cartItems.push(newItem);
 
         }
         await user.save(); // Save changes to the user
@@ -43,8 +45,6 @@ const addToCart = expressAsyncHandler(async (req, res) => {
 
     await cart.save(); // Save changes to the cart
     const updatedCart = await Cart.findOne({ user: user._id }).populate('cartItems.product');
-    console.log(user.cart);
-    console.log(cart.cartItems);
     return res.status(201).json({ message: 'Product added to cart', cart: updatedCart });
 });
 
@@ -59,13 +59,11 @@ const getCart = expressAsyncHandler(async (req, res) => {
 
 const getCartTotal = expressAsyncHandler(async (req, res) => {
     const user = req.user;
-    console.log(user);
     const userId = user._id.toString();
     if (!userId) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     const cart = await Cart.findOne({ user: userId });
-    console.log(user.cart)
     if (!cart) {
         return res.status(404).json({ message: 'Cart not found' });
     }
@@ -75,16 +73,27 @@ const getCartTotal = expressAsyncHandler(async (req, res) => {
     const userCart = user.cart;
 
     for (let item of userCart) {
-        const prodId = item.product.toString()
-        const product = await Product.findById(prodId)
-        const price = product.price;
-        const qty = item.qty;
-        const itemTotal = price * qty;
-        cartTotal += itemTotal;
-        console.log(cartTotal);
-
+        console.log(item)
+        if (item.cartItems) {
+            // item is a cart object
+            for (let cartItem of item.cartItems) {
+                const prodId = cartItem.product;
+                const product = await Product.findById(prodId);
+                const price = product.price;
+                const qty = cartItem.qty;
+                const itemTotal = price * qty;
+                cartTotal += itemTotal;
+            }
+        } else {
+            // item is a cart item
+            const prodId = item.product;
+            const product = await Product.findById(prodId);
+            const price = product.price;
+            const qty = item.qty;
+            const itemTotal = price * qty;
+            cartTotal += itemTotal;
+        }
     }
-
 
     return res.status(200).json({ "total cart price": cartTotal });
 });
