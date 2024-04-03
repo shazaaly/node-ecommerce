@@ -123,15 +123,33 @@ const applyCoupon = expressAsyncHandler(async (req, res) => {
     const user = req.user;
     const cart = user.cart;
     console.log(cart);
-    console.log(user);
 
     // Calculate totalCart here
     let totalCart = 0;
-    for (let item of cart) {
-        const prodId = item.product.toString();
-        const product = await Product.findById(prodId);
-        totalCart += parseFloat((product.price * product.quantity).toFixed(2));
 
+  const userCart = user.cart;
+
+    for (let item of userCart) {
+        console.log(item)
+        if (item.cartItems) {
+            // item is a cart object
+            for (let cartItem of item.cartItems) {
+                const prodId = cartItem.product;
+                const product = await Product.findById(prodId);
+                const price = product.price;
+                const qty = cartItem.qty;
+                const itemTotal = price * qty;
+                cartTotal += itemTotal;
+            }
+        } else {
+            // item is a cart item
+            const prodId = item.product;
+            const product = await Product.findById(prodId);
+            const price = product.price;
+            const qty = item.qty;
+            const itemTotal = price * qty;
+            cartTotal += itemTotal;
+        }
     }
 
     // Apply the discount
