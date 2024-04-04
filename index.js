@@ -11,11 +11,7 @@ const morgan = require('morgan');
 const app = express();
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-    console.log('Headers:', req.headers);
-    console.log('Body:', req.body); // This will log `undefined` if the body isn't parsed yet
-    next();
-});
+
 
 // Setup Swagger
 setupSwagger(app);
