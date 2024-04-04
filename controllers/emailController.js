@@ -3,7 +3,7 @@ const expressAsyncHandler = require('express-async-handler');
 
 const sendMail = async (req, res) => {
 
-    const { to, subject, text } = req.body;
+    let { to, subject, text } = req.body;
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
