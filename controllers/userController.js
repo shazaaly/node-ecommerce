@@ -148,10 +148,9 @@ const updatePassword = expressAsyncHandler(async (req, res) => {
 });
 
 const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
-    const email = req.body.email;
-    let user;
+    const {to} = req.body;
     try {
-        user = await User.findOne({ email: email });
+        const user = await User.findOne({ email:to });
 
         if (!user) {
             return res.status(400).json({ message: 'No user found with this email address' });
