@@ -148,9 +148,11 @@ const updatePassword = expressAsyncHandler(async (req, res) => {
 });
 
 const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
+    console.log(req.body);
     const {to} = req.body;
     const emailToLower = to.toLowerCase();
     const user = await User.findOne({ email: emailToLower });
+    console.log(user)
 
 
     console.log(to)
