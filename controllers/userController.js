@@ -147,8 +147,8 @@ const updatePassword = expressAsyncHandler(async (req, res) => {
     }
 });
 
-const forgetPasswordToken = (async (req, res) => {
-    const to = req.body.to;
+const forgetPasswordToken = async (req, res) => {
+    const { to } = req.body;
     const emailToLower = to.toLowerCase();
 
     try {
@@ -157,6 +157,7 @@ const forgetPasswordToken = (async (req, res) => {
         if (!user) {
             return res.status(400).json({ message: 'No user found with this email address' });
         }
+
         const token = user.createPasswordResetToken();
         await user.save();
 
@@ -167,15 +168,12 @@ const forgetPasswordToken = (async (req, res) => {
             text: `Use the following link to reset your password ${process.env.TEST_URL}/reset-password/${token}`
         });
 
-        // If email sent successfully, return a success response
         return res.status(200).json({ message: 'Password reset email sent successfully.' });
     } catch (error) {
-        // Log or handle the error accordingly before sending a response
         console.error("Error during forgetPasswordToken operation:", error);
-        // Adjusted to send back a 500 status code, which is more appropriate for server errors
         return res.status(500).json({ message: error.message });
     }
-});
+};
 
 const resetPassword = expressAsyncHandler(async (req, res) => {
     const token = req.params.token

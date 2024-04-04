@@ -2,6 +2,7 @@ const nodemailer = require('nodemailer');
 const expressAsyncHandler = require('express-async-handler');
 
 const sendMail = async (req, res) => {
+    try {
 
     let { to, subject, text } = req.body;
     const transporter = nodemailer.createTransport({
@@ -23,7 +24,7 @@ const sendMail = async (req, res) => {
         text,
     };
 
-    try {
+
         const info = await transporter.sendMail(mailOptions);
         console.log('Email sent: ' + info.response);
         return { success: true, message: 'Email sent: ' + info.response };
