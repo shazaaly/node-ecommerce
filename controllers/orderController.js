@@ -32,7 +32,6 @@ const createOrder = expressAsyncHandler(async (req, res) => {
         totalPrice : calcTotalPrice,
         user: user._id
     });
-    console.log(order)
     await order.save();
     return res.status(201).json({ message: 'Order created', order });
 })
