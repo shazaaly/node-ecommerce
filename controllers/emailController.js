@@ -2,8 +2,10 @@ const nodemailer = require('nodemailer');
 const expressAsyncHandler = require('express-async-handler');
 
 const sendMail = async (req, res) => {
+    if (!req.body.to || !req.body.subject || !req.body.text) {
+        return res.status(400).json({ message: 'Invalid request' });
+    }
     const { to, subject, text } = req.body;
-    console.log(req.body);
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -16,7 +18,7 @@ const sendMail = async (req, res) => {
         }
     });
 
-    const mailOptions = {
+    let mailOptions = {
         from: process.env.EMAIL,
         to : to,
         subject,

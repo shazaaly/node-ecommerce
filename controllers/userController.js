@@ -148,10 +148,9 @@ const updatePassword = expressAsyncHandler(async (req, res) => {
 });
 
 const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
-    const {email} = req.body;
-    console.log(email)
+    const {to} = req.body;
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ to });
 
         if (!user) {
             return res.status(400).json({ message: 'No user found with this email address' });
@@ -161,7 +160,7 @@ const forgetPasswordToken = expressAsyncHandler(async (req, res) => {
 
         await sendMail({
             from: process.env.EMAIL,
-            to: email,
+            to: to,
             subject: "Reset Password",
             text: `Use the following link to reset your password ${process.env.TEST_URL}/reset-password/${token}`
         });
