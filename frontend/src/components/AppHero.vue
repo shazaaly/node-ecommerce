@@ -1,9 +1,9 @@
 <template>
-  <div class="d-flex justify-center align-center mt-5">
-    <v-card min-width="300" width="500" flat class="mr-7  d-flex flex-column justify-center align-center">
+  <div class="hero d-flex justify-center align-center mt-5 mx-md-10 mx-5">
+    <v-card min-width="300" width="500" flat class="list-card mr-7 d-flex flex-column justify-center align-center">
       <v-list class="w-100 pl-10" :items="items" item-title="name" item-value="id"></v-list>
     </v-card>
-    <v-carousel class="mr-15 " :show-arrows="false">
+    <v-carousel class="hero-carousel mr-0 " :show-arrows="false">
       <v-carousel-item
         src="https://www.mytwintiers.com/wp-content/uploads/sites/89/2023/01/iPhone-15-Rumors.jpg?strip=1" cover>
         <div style="background-image: linear-gradient(rgba(0, 0,0,0.5), rgba(0,0,0,0.8));"
@@ -23,6 +23,19 @@
   </div>
 </template>
 
+<style scoped>
+
+@media (max-width:1280px) {
+  .hero {
+    flex-direction: column-reverse;
+  }
+  .list-card {
+    margin-top: 20px;
+    width: 100% !important;
+  }
+
+}
+</style>
 <script>
 export default {
   data: () => ({
