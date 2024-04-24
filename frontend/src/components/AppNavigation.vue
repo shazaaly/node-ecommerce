@@ -46,4 +46,13 @@ import AppToolBar from "@/components/AppToolBar.vue"
   background-color: #EEE;
   padding: 5px 10px;
 }
+
+@media (max-width:1043px) {
+  nav {
+    flex-direction: column;
+    gap: 30px;
+  }
+}
 </style>
+
+
